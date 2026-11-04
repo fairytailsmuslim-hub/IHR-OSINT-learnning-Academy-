@@ -1,0 +1,117 @@
+// Self-hosted PostgreSQL Prisma Schema for IHR OSINT Academy
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String          @id @default(cuid())
+  email            String          @unique
+  passwordHash     String
+  displayName      String
+  role             String          @default("student") // "student" | "admin"
+  careerGoal       String          @default("soc_analyst")
+  skillLevel       String          @default("beginner")
+  onboarded        Boolean         @default(false)
+  stageACertified  Boolean         @default(false)
+  stageACertId     String?
+  stageAScore      Int             @default(0)
+  stageBCertified  Boolean         @default(false)
+  stageBCertId     String?
+  stageBScore      Int             @default(0)
+  streakDays       Int             @default(1)
+  minutesStudied   Int             @default(0)
+  lastActiveDate   String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  topicProgress    TopicProgress[]
+  labProgress      LabProgress[]
+  notes            StudyNote[]
+  spacedCards      SpacedCard[]
+}
+
+model TopicRecord {
+  slug             String   @id
+  moduleId         String
+  stage            String
+  title            String
+  estimatedMinutes Int
+  concept          String
+  framework        String
+  caseStudy        String
+  toolsJson        String
+  labSlug          String
+  commonMistakes   String
+  legalNotes       String
+  notesPrompt      String
+  quizJson         String
+}
+
+model ToolRecord {
+  id          String @id
+  name        String
+  url         String
+  category    String
+  pricing     String
+  platform    String
+  stage       String
+  description String
+  ethicalNote String
+}
+
+model TopicProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  topicSlug String
+  stage     String
+  completed Boolean  @default(false)
+  quizScore Int      @default(0)
+  quizTotal Int      @default(5)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicSlug])
+}
+
+model LabProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  labSlug   String
+  completed Boolean  @default(false)
+  score     Int      @default(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, labSlug])
+}
+
+model StudyNote {
+  id         String   @id @default(cuid())
+  userId     String
+  targetSlug String
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SpacedCard {
+  id                String   @id @default(cuid())
+  userId            String
+  cardId            String
+  topicSlug         String
+  prompt            String
+  answer            String
+  intervalDays      Int      @default(0)
+  streak            Int      @default(0)
+  nextReviewEpochMs BigInt
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+}

@@ -1,0 +1,466 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core Reusable Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isVerifiedUser() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'fairytailsmuslim@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (isVerifiedUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function hasValidParentUser(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)) &&
+        get(/databases/$(database)/documents/users/$(userId)).data.uid == userId;
+    }
+
+    function isParentStageACertified(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)) &&
+        get(/databases/$(database)/documents/users/$(userId)).data.stageACertified == true;
+    }
+
+    // Validation Blueprints (Anti-Update-Gap, Zero DB Reads Inside Helpers)
+    function isValidUserProfile(data, targetUserId) {
+      return data.keys().hasAll([
+          'uid', 'displayName', 'careerGoal', 'skillLevel', 'onboarded',
+          'stageACertified', 'stageACertId', 'stageAScore',
+          'stageBCertified', 'stageBCertId', 'stageBScore',
+          'streakDays', 'minutesStudied', 'lastActiveDate',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'displayName', 'careerGoal', 'skillLevel', 'onboarded',
+          'stageACertified', 'stageACertId', 'stageAScore',
+          'stageBCertified', 'stageBCertId', 'stageBScore',
+          'streakDays', 'minutesStudied', 'lastActiveDate',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+        data.careerGoal is string && data.careerGoal.size() <= 32 &&
+        data.careerGoal in ['journalist', 'soc_analyst', 'threat_intel', 'fraud_analyst', 'general'] &&
+        data.skillLevel is string && data.skillLevel.size() <= 32 &&
+        data.skillLevel in ['beginner', 'intermediate', 'pro'] &&
+        data.onboarded is bool &&
+        data.stageACertified is bool &&
+        data.stageACertId is string && data.stageACertId.size() <= 64 &&
+        data.stageAScore is int && data.stageAScore >= 0 && data.stageAScore <= 100 &&
+        (!data.stageACertified || (data.stageAScore >= 70 && data.stageACertId.size() >= 6)) &&
+        data.stageBCertified is bool &&
+        data.stageBCertId is string && data.stageBCertId.size() <= 64 &&
+        data.stageBScore is int && data.stageBScore >= 0 && data.stageBScore <= 100 &&
+        (!data.stageBCertified || (data.stageACertified && data.stageBScore >= 70 && data.stageBCertId.size() >= 6)) &&
+        data.streakDays is int && data.streakDays >= 0 && data.streakDays <= 10000 &&
+        data.minutesStudied is int && data.minutesStudied >= 0 && data.minutesStudied <= 5000000 &&
+        data.lastActiveDate is string && data.lastActiveDate.size() <= 16 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidUserPrivateInfo(data, targetUserId) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidTopicProgress(data, targetUserId) {
+      return data.keys().hasAll(['uid', 'topicSlug', 'stage', 'completed', 'quizScore', 'quizTotal', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'topicSlug', 'stage', 'completed', 'quizScore', 'quizTotal', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.topicSlug is string && data.topicSlug.size() >= 1 && data.topicSlug.size() <= 128 && data.topicSlug.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.stage is string && data.stage.size() == 1 && data.stage in ['A', 'B'] &&
+        data.completed is bool &&
+        data.quizScore is int && data.quizScore >= 0 && data.quizScore <= 100 &&
+        data.quizTotal is int && data.quizTotal >= 1 && data.quizTotal <= 100 &&
+        data.quizScore <= data.quizTotal &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidLabProgress(data, targetUserId) {
+      return data.keys().hasAll(['uid', 'labSlug', 'completed', 'score', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'labSlug', 'completed', 'score', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.labSlug is string && data.labSlug.size() >= 1 && data.labSlug.size() <= 128 && data.labSlug.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.completed is bool &&
+        data.score is int && data.score >= 0 && data.score <= 100 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidStudyNote(data, targetUserId) {
+      return data.keys().hasAll(['uid', 'targetSlug', 'title', 'content', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'targetSlug', 'title', 'content', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.targetSlug is string && data.targetSlug.size() >= 1 && data.targetSlug.size() <= 128 && data.targetSlug.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+        data.content is string && data.content.size() >= 1 && data.content.size() <= 10000 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidSpacedCard(data, targetUserId) {
+      return data.keys().hasAll([
+          'uid', 'cardId', 'topicSlug', 'prompt', 'answer',
+          'intervalDays', 'streak', 'nextReviewEpochMs', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'cardId', 'topicSlug', 'prompt', 'answer',
+          'intervalDays', 'streak', 'nextReviewEpochMs', 'createdAt', 'updatedAt'
+        ]) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetUserId &&
+        data.cardId is string && data.cardId.size() >= 1 && data.cardId.size() <= 128 && data.cardId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.topicSlug is string && data.topicSlug.size() >= 1 && data.topicSlug.size() <= 128 && data.topicSlug.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.prompt is string && data.prompt.size() >= 1 && data.prompt.size() <= 500 &&
+        data.answer is string && data.answer.size() >= 1 && data.answer.size() <= 200 &&
+        data.intervalDays is int && data.intervalDays >= 0 && data.intervalDays <= 3650 &&
+        data.streak is int && data.streak >= 0 && data.streak <= 1000 &&
+        data.nextReviewEpochMs is int && data.nextReviewEpochMs >= 0 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCustomTool(data) {
+      return data.keys().hasAll([
+          'authorUid', 'name', 'url', 'category', 'pricing',
+          'platform', 'stage', 'description', 'ethicalNote', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'authorUid', 'name', 'url', 'category', 'pricing',
+          'platform', 'stage', 'description', 'ethicalNote', 'createdAt', 'updatedAt'
+        ]) &&
+        data.authorUid is string && data.authorUid.size() >= 1 && data.authorUid.size() <= 128 && data.authorUid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.authorUid == request.auth.uid &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        data.url is string && data.url.size() >= 8 && data.url.size() <= 300 && data.url.matches('^https://.*') &&
+        data.category is string && data.category.size() <= 32 &&
+        data.category in [
+          'Search', 'Social', 'Domain/IP', 'Email', 'Image/Video',
+          'Geo', 'Threat Intel', 'Corporate', 'Verification', 'Note-taking/Graph'
+        ] &&
+        data.pricing is string && data.pricing.size() <= 20 &&
+        data.pricing in ['Free', 'Freemium', 'Open Source', 'Paid'] &&
+        data.platform is string && data.platform.size() >= 2 && data.platform.size() <= 80 &&
+        data.stage is string && data.stage.size() == 1 && data.stage in ['A', 'B'] &&
+        data.description is string && data.description.size() >= 10 && data.description.size() <= 600 &&
+        data.ethicalNote is string && data.ethicalNote.size() >= 5 && data.ethicalNote.size() >= 400 == false &&
+        data.ethicalNote.size() <= 400 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAdminRecord(data, targetAdminUid) {
+      return data.keys().hasAll(['uid', 'grantedAt']) &&
+        data.keys().hasOnly(['uid', 'grantedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == targetAdminUid &&
+        data.grantedAt is timestamp;
+    }
+
+    // 1. User Profile (Non-PII)
+    match /users/{userId} {
+      allow get: if isVerifiedUser() && isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isVerifiedUser() && isAdmin();
+
+      allow create: if isOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        incoming().stageACertified == false &&
+        incoming().stageBCertified == false;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isOwner(userId) &&
+            (!existing().stageACertified || incoming().stageACertified == true) &&
+            (!existing().stageBCertified || incoming().stageBCertified == true) &&
+            (
+              // Action 1: Update Onboarding / Preferences / Activity Counters
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'displayName', 'careerGoal', 'skillLevel', 'onboarded',
+                'streakDays', 'minutesStudied', 'lastActiveDate', 'updatedAt'
+              ]) ||
+              // Action 2: Issue Stage A Certificate
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'stageACertified', 'stageACertId', 'stageAScore', 'updatedAt'
+              ]) ||
+              // Action 3: Issue Stage B Certificate (requires existing Stage A certified)
+              (
+                existing().stageACertified == true &&
+                incoming().diff(existing()).affectedKeys().hasOnly([
+                  'stageBCertified', 'stageBCertId', 'stageBScore', 'updatedAt'
+                ])
+              )
+            )
+          ) ||
+          isAdmin()
+        );
+
+      allow delete: if isVerifiedUser() && isValidId(userId) && isAdmin();
+
+      // 2. Isolated User PII Subcollection
+      match /private/{docId} {
+        allow get: if isVerifiedUser() && isValidId(userId) && isValidId(docId) && (isOwner(userId) || isAdmin());
+        allow list: if false;
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          docId == 'info' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          hasValidParentUser(userId);
+
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          docId == 'info' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          (
+            (
+              isOwner(userId) &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt']) &&
+              hasValidParentUser(userId)
+            ) ||
+            isAdmin()
+          );
+
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(docId) && isAdmin();
+      }
+
+      // 3. Topic Progress Subcollection
+      match /topicProgress/{topicSlug} {
+        allow get: if isVerifiedUser() && isValidId(userId) && isValidId(topicSlug) && (isOwner(userId) || isAdmin());
+        allow list: if isVerifiedUser() && ((isOwner(userId) && resource.data.uid == request.auth.uid) || isAdmin());
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(topicSlug) &&
+          isValidTopicProgress(incoming(), userId) &&
+          incoming().topicSlug == topicSlug &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          hasValidParentUser(userId) &&
+          (incoming().stage == 'A' || isParentStageACertified(userId) || isAdmin());
+
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(topicSlug) &&
+          isValidTopicProgress(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().topicSlug == existing().topicSlug &&
+          incoming().stage == existing().stage &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          (
+            (
+              isOwner(userId) &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['completed', 'quizScore', 'quizTotal', 'updatedAt']) &&
+              hasValidParentUser(userId) &&
+              (incoming().stage == 'A' || isParentStageACertified(userId))
+            ) ||
+            isAdmin()
+          );
+
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(topicSlug) && isAdmin();
+      }
+
+      // 4. Lab Progress Subcollection
+      match /labProgress/{labSlug} {
+        allow get: if isVerifiedUser() && isValidId(userId) && isValidId(labSlug) && (isOwner(userId) || isAdmin());
+        allow list: if isVerifiedUser() && ((isOwner(userId) && resource.data.uid == request.auth.uid) || isAdmin());
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(labSlug) &&
+          isValidLabProgress(incoming(), userId) &&
+          incoming().labSlug == labSlug &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          hasValidParentUser(userId);
+
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(labSlug) &&
+          isValidLabProgress(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().labSlug == existing().labSlug &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          (
+            (
+              isOwner(userId) &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['completed', 'score', 'updatedAt']) &&
+              hasValidParentUser(userId)
+            ) ||
+            isAdmin()
+          );
+
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(labSlug) && isAdmin();
+      }
+
+      // 5. Study Notes Subcollection
+      match /notes/{noteId} {
+        allow get: if isVerifiedUser() && isValidId(userId) && isValidId(noteId) && (isOwner(userId) || isAdmin());
+        allow list: if isVerifiedUser() && ((isOwner(userId) && resource.data.uid == request.auth.uid) || isAdmin());
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(noteId) &&
+          isValidStudyNote(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          hasValidParentUser(userId);
+
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(noteId) &&
+          isValidStudyNote(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().targetSlug == existing().targetSlug &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          (
+            (
+              isOwner(userId) &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['title', 'content', 'updatedAt']) &&
+              hasValidParentUser(userId)
+            ) ||
+            isAdmin()
+          );
+
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(noteId) &&
+          ((isOwner(userId) && hasValidParentUser(userId)) || isAdmin());
+      }
+
+      // 6. Spaced Repetition Cards Subcollection
+      match /spacedRepetition/{cardId} {
+        allow get: if isVerifiedUser() && isValidId(userId) && isValidId(cardId) && (isOwner(userId) || isAdmin());
+        allow list: if isVerifiedUser() && ((isOwner(userId) && resource.data.uid == request.auth.uid) || isAdmin());
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(cardId) &&
+          isValidSpacedCard(incoming(), userId) &&
+          incoming().cardId == cardId &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          hasValidParentUser(userId);
+
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(cardId) &&
+          isValidSpacedCard(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().cardId == existing().cardId &&
+          incoming().topicSlug == existing().topicSlug &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          (
+            (
+              isOwner(userId) &&
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'prompt', 'answer', 'intervalDays', 'streak', 'nextReviewEpochMs', 'updatedAt'
+              ]) &&
+              hasValidParentUser(userId)
+            ) ||
+            isAdmin()
+          );
+
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(cardId) &&
+          ((isOwner(userId) && hasValidParentUser(userId)) || isAdmin());
+      }
+    }
+
+    // 7. Admin-Curated Custom OSINT Tools Directory (Denial-of-Wallet evaluation order)
+    match /customTools/{toolId} {
+      allow get: if isVerifiedUser() && isValidId(toolId);
+      allow list: if isVerifiedUser() && resource.data.stage in ['A', 'B'];
+
+      allow create: if isVerifiedUser() &&
+        isValidId(toolId) &&
+        isValidCustomTool(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isVerifiedUser() &&
+        isValidId(toolId) &&
+        isValidCustomTool(incoming()) &&
+        incoming().authorUid == existing().authorUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'url', 'category', 'pricing', 'platform',
+          'stage', 'description', 'ethicalNote', 'updatedAt'
+        ]) &&
+        isAdmin();
+
+      allow delete: if isVerifiedUser() && isValidId(toolId) && isAdmin();
+    }
+
+    // 8. Trusted Admins Collection (Denial-of-Wallet evaluation order)
+    match /admins/{adminUid} {
+      allow get: if isVerifiedUser() && isValidId(adminUid) && (isOwner(adminUid) || isAdmin());
+      allow list: if isVerifiedUser() && isAdmin();
+
+      allow create: if isVerifiedUser() &&
+        isValidId(adminUid) &&
+        isValidAdminRecord(incoming(), adminUid) &&
+        incoming().grantedAt == request.time &&
+        isAdmin();
+
+      allow update: if false;
+      allow delete: if isVerifiedUser() && isValidId(adminUid) && isAdmin();
+    }
+  }
+}

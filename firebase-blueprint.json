@@ -1,0 +1,429 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Learner profile, adaptive roadmap preferences, streak counters, and Stage A / Stage B certification flags (no PII).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the learner."
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Display name shown on certificates and dashboard."
+        },
+        "careerGoal": {
+          "type": "string",
+          "enum": ["journalist", "soc_analyst", "threat_intel", "fraud_analyst", "general"],
+          "description": "Selected career specialization track."
+        },
+        "skillLevel": {
+          "type": "string",
+          "enum": ["beginner", "intermediate", "pro"],
+          "description": "Self-reported starting experience level."
+        },
+        "onboarded": {
+          "type": "boolean",
+          "description": "Whether onboarding adaptive roadmap setup is complete."
+        },
+        "stageACertified": {
+          "type": "boolean",
+          "description": "Whether Stage A Passive OSINT Certificate has been earned."
+        },
+        "stageACertId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Unique verification ID for Stage A certificate."
+        },
+        "stageAScore": {
+          "type": "integer",
+          "description": "Final exam percentage score for Stage A (0-100)."
+        },
+        "stageBCertified": {
+          "type": "boolean",
+          "description": "Whether Stage B Advanced OSINT & Threat Intel Certificate has been earned."
+        },
+        "stageBCertId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Unique verification ID for Stage B certificate."
+        },
+        "stageBScore": {
+          "type": "integer",
+          "description": "Final exam percentage score for Stage B (0-100)."
+        },
+        "streakDays": {
+          "type": "integer",
+          "description": "Consecutive daily study streak."
+        },
+        "minutesStudied": {
+          "type": "integer",
+          "description": "Cumulative study time in minutes."
+        },
+        "lastActiveDate": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "ISO YYYY-MM-DD date string of last study activity."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "careerGoal",
+        "skillLevel",
+        "onboarded",
+        "stageACertified",
+        "stageACertId",
+        "stageAScore",
+        "stageBCertified",
+        "stageBCertId",
+        "stageBScore",
+        "streakDays",
+        "minutesStudied",
+        "lastActiveDate",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII record containing user email address.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 254
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt", "updatedAt"]
+    },
+    "TopicProgress": {
+      "title": "TopicProgress",
+      "description": "Per-topic completion state and fill-in-the-blank quiz mastery score.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "topicSlug": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["A", "B"]
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "quizScore": {
+          "type": "integer"
+        },
+        "quizTotal": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "topicSlug", "stage", "completed", "quizScore", "quizTotal", "createdAt", "updatedAt"]
+    },
+    "LabProgress": {
+      "title": "LabProgress",
+      "description": "Per-lab completion state and self-check fill-in-the-blank score.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "labSlug": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "score": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "labSlug", "completed", "score", "createdAt", "updatedAt"]
+    },
+    "StudyNote": {
+      "title": "StudyNote",
+      "description": "Learner structured investigation and topic study note.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "targetSlug": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "targetSlug", "title", "content", "createdAt", "updatedAt"]
+    },
+    "SpacedRepetitionCard": {
+      "title": "SpacedRepetitionCard",
+      "description": "Fill-in-the-blank review card scheduled via SM-2 spaced repetition.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "cardId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "topicSlug": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "intervalDays": {
+          "type": "integer"
+        },
+        "streak": {
+          "type": "integer"
+        },
+        "nextReviewEpochMs": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "cardId",
+        "topicSlug",
+        "prompt",
+        "answer",
+        "intervalDays",
+        "streak",
+        "nextReviewEpochMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CustomTool": {
+      "title": "CustomTool",
+      "description": "Admin-managed real OSINT tool entry in the platform directory.",
+      "type": "object",
+      "properties": {
+        "authorUid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "url": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 300
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Search",
+            "Social",
+            "Domain/IP",
+            "Email",
+            "Image/Video",
+            "Geo",
+            "Threat Intel",
+            "Corporate",
+            "Verification",
+            "Note-taking/Graph"
+          ]
+        },
+        "pricing": {
+          "type": "string",
+          "enum": ["Free", "Freemium", "Open Source", "Paid"]
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["A", "B"]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 600
+        },
+        "ethicalNote": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 400
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "authorUid",
+        "name",
+        "url",
+        "category",
+        "pricing",
+        "platform",
+        "stage",
+        "description",
+        "ethicalNote",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted admin role assignment document.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "grantedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "grantedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Learner non-PII profile, onboarding track, study streak, and Stage A / Stage B certification flags."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Isolated PII storage for learner email address."
+    },
+    "/users/{userId}/topicProgress/{topicSlug}": {
+      "schema": { "$ref": "#/entities/TopicProgress" },
+      "description": "Per-topic completion and fill-in-the-blank quiz mastery."
+    },
+    "/users/{userId}/labProgress/{labSlug}": {
+      "schema": { "$ref": "#/entities/LabProgress" },
+      "description": "Per-lab completion and self-check score."
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": { "$ref": "#/entities/StudyNote" },
+      "description": "Personal study and investigation notes."
+    },
+    "/users/{userId}/spacedRepetition/{cardId}": {
+      "schema": { "$ref": "#/entities/SpacedRepetitionCard" },
+      "description": "Spaced repetition review cards queued from fill-in-the-blank quizzes."
+    },
+    "/customTools/{toolId}": {
+      "schema": { "$ref": "#/entities/CustomTool" },
+      "description": "Admin-managed additional OSINT tools."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Trusted admin lookup documents."
+    }
+  }
+}

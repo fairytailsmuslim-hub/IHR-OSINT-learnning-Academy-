@@ -1,0 +1,198 @@
+[
+  {
+    "slug": "osint-cycle",
+    "name": "The OSINT Cycle",
+    "shortName": "OSINT Cycle",
+    "stage": "A",
+    "tagline": "Iterative five-phase workflow turning raw public data into verified, actionable answers.",
+    "overview": "Raw public data is not intelligence. The OSINT Cycle prevents aimless 'rabbit-hole' searching by requiring clear Intelligence Requirements (IRs) before collection begins, rigorous verification during processing, and concise reporting tailored to the decision-maker.",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Planning & Direction",
+        "detail": "Define specific Intelligence Requirements (IRs), legal scope, passive boundaries, and OPSEC profile before running a single query."
+      },
+      {
+        "step": "02",
+        "title": "Collection",
+        "detail": "Gather publicly available data from search indexes, registries, archives, CT logs, and public social records while logging hashes and timestamps."
+      },
+      {
+        "step": "03",
+        "title": "Processing & Verification",
+        "detail": "Normalize timestamps to UTC, extract metadata, deduplicate records, translate text, and verify authenticity across independent sources."
+      },
+      {
+        "step": "04",
+        "title": "Analysis & Production",
+        "detail": "Correlate entities, test competing hypotheses, assess confidence levels, and synthesize findings into clear conclusions."
+      },
+      {
+        "step": "05",
+        "title": "Dissemination & Feedback",
+        "detail": "Deliver structured BLUF reports with citations, apply TLP markings if needed, and refine future requirements from stakeholder feedback."
+      }
+    ],
+    "mappedModules": ["mod-01", "mod-02", "mod-09", "mod-10", "mod-20", "mod-30"]
+  },
+  {
+    "slug": "intelligence-cycle",
+    "name": "Traditional Intelligence Cycle",
+    "shortName": "Intelligence Cycle",
+    "stage": "A",
+    "tagline": "How open-source findings integrate with multi-source national, corporate, and SOC intelligence operations.",
+    "overview": "Used across government agencies, CSIRTs, and corporate security teams, the Intelligence Cycle places OSINT alongside internal telemetry (SIEM logs, incident tickets) to answer Priority Intelligence Requirements (PIRs) with continuous feedback loops.",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Direction (PIRs)",
+        "detail": "Leadership defines Priority Intelligence Requirements—for example, 'Which external domains impersonate our login portal?'"
+      },
+      {
+        "step": "02",
+        "title": "Multi-Source Collection",
+        "detail": "Combine external passive OSINT (CT logs, RDAP, passive DNS) with internal defensive telemetry (firewall and proxy logs)."
+      },
+      {
+        "step": "03",
+        "title": "Processing & Collation",
+        "detail": "Convert raw feeds into structured STIX objects, normalized CSV/JSON tables, and indexed timelines."
+      },
+      {
+        "step": "04",
+        "title": "Exploitation & Analysis",
+        "detail": "Apply structured analytic techniques to explain 'so what?' and forecast adversary or business risk."
+      },
+      {
+        "step": "05",
+        "title": "Dissemination & Review",
+        "detail": "Route tactical IOCs to SIEM/SOAR teams and strategic briefs to executives, then update PIRs."
+      }
+    ],
+    "mappedModules": ["mod-01", "mod-21", "mod-23", "mod-24", "mod-30"]
+  },
+  {
+    "slug": "diamond-model",
+    "name": "The Diamond Model of Intrusion Analysis",
+    "shortName": "Diamond Model",
+    "stage": "B",
+    "tagline": "Four-vertex relational model connecting Adversary, Infrastructure, Capability, and Victim.",
+    "overview": "Created by Caltagirone, Pendergast, and Betz, the Diamond Model states that every malicious event involves an Adversary using Capabilities over Infrastructure against a Victim. OSINT excels at pivoting across the Infrastructure vertex (domains, TLS certs, ASNs, IPs) to uncover related Capabilities and protect Victims.",
+    "steps": [
+      {
+        "step": "Vertex N",
+        "title": "Adversary",
+        "detail": "The threat actor or operator behind an intrusion or campaign (tracked cautiously via cluster IDs before formal attribution)."
+      },
+      {
+        "step": "Vertex W",
+        "title": "Infrastructure",
+        "detail": "Primary OSINT pivot surface: C2 IPs, phishing domains, registrant patterns, passive DNS history, and TLS certificates."
+      },
+      {
+        "step": "Vertex E",
+        "title": "Capability",
+        "detail": "Malware families, phishing kits, exploits, and TTPs observed in public sandboxes and advisories."
+      },
+      {
+        "step": "Vertex S",
+        "title": "Victim",
+        "detail": "Targeted sector, geography, technology stack, or exposed external attack surface."
+      }
+    ],
+    "mappedModules": ["mod-13", "mod-14", "mod-21", "mod-25", "mod-26"]
+  },
+  {
+    "slug": "mitre-attack-recon",
+    "name": "MITRE ATT&CK — Reconnaissance (TA0043)",
+    "shortName": "MITRE ATT&CK Recon",
+    "stage": "B",
+    "tagline": "Cataloging adversary pre-compromise information gathering (T1589–T1598) to harden organizational exposure.",
+    "overview": "MITRE ATT&CK Tactic TA0043 documents how adversaries gather target data before initial access. By running authorized passive OSINT self-assessments mapped to TA0043, defenders discover leaked employee metadata, forgotten dev subdomains, and public tech-stack disclosures before attackers weaponize them.",
+    "steps": [
+      {
+        "step": "T1590",
+        "title": "Gather Victim Network Information",
+        "detail": "WHOIS/RDAP, DNS records, passive subdomains, IP blocks, ASN allocations, and Certificate Transparency logs."
+      },
+      {
+        "step": "T1591",
+        "title": "Gather Victim Org Information",
+        "detail": "Public corporate filings, business relationships, physical locations, and departmental structures."
+      },
+      {
+        "step": "T1589",
+        "title": "Gather Victim Identity Information",
+        "detail": "Email naming formats, exposed document author metadata, and public credential exposure indicators."
+      },
+      {
+        "step": "T1593 / T1596",
+        "title": "Search Open Websites & Technical Databases",
+        "detail": "Search engine dorking, code repositories, Shodan/Censys banner indexes, and passive DNS databases."
+      }
+    ],
+    "mappedModules": ["mod-09", "mod-12", "mod-13", "mod-14", "mod-16", "mod-22"]
+  },
+  {
+    "slug": "kill-chain",
+    "name": "Lockheed Martin Cyber Kill Chain",
+    "shortName": "Cyber Kill Chain",
+    "stage": "B",
+    "tagline": "Understanding Phase 1 (Reconnaissance) and breaking attack campaigns early through infrastructure intelligence.",
+    "overview": "The seven-phase Cyber Kill Chain models sequential intrusion stages from Reconnaissance to Actions on Objectives. Defenders use OSINT both at Phase 1 (reducing external footprint) and during Weaponization/Delivery/C2 (tracking newly registered phishing domains and C2 servers via passive DNS and CT logs).",
+    "steps": [
+      {
+        "step": "Phase 1",
+        "title": "Reconnaissance",
+        "detail": "Harvesting public emails, subdomains, job-post tech stacks, and archived pages. Mitigated via OPSEC & exposure audits."
+      },
+      {
+        "step": "Phase 2–3",
+        "title": "Weaponization & Delivery",
+        "detail": "Registering lookalike domains, issuing TLS certs (visible in CT logs!), and sending spear-phishing lures."
+      },
+      {
+        "step": "Phase 4–5",
+        "title": "Exploitation & Installation",
+        "detail": "Targeting internet-facing services (prioritized by defenders using CISA KEV + passive Shodan/Censys audits)."
+      },
+      {
+        "step": "Phase 6–7",
+        "title": "Command & Control (C2) & Objectives",
+        "detail": "Beaconing to attacker infrastructure—enriched by SOC analysts via passive DNS, ASN reputation, and JARM hashes."
+      }
+    ],
+    "mappedModules": ["mod-12", "mod-21", "mod-24", "mod-25", "mod-26"]
+  },
+  {
+    "slug": "admiralty-code",
+    "name": "Admiralty Code (NATO Source Grading)",
+    "shortName": "Admiralty Code",
+    "stage": "B",
+    "tagline": "Two-axis alphanumeric standard separating Source Reliability (A–F) from Information Credibility (1–6).",
+    "overview": "In open-source investigations, a normally reliable source can repeat an unverified rumor, and an unknown social account can post genuine video evidence. The Admiralty Code grades the SOURCE (A to F) independently from the INFORMATION (1 to 6), preventing halo-effect bias in reports.",
+    "steps": [
+      {
+        "step": "Axis A–F",
+        "title": "Source Reliability",
+        "detail": "A: Completely reliable · B: Usually reliable · C: Fairly reliable · D: Not usually reliable · E: Unreliable · F: Reliability cannot be judged."
+      },
+      {
+        "step": "Axis 1–6",
+        "title": "Information Credibility",
+        "detail": "1: Confirmed by independent sources · 2: Probably true · 3: Possibly true · 4: Doubtful · 5: Improbable · 6: Truth cannot be judged."
+      },
+      {
+        "step": "Example F1",
+        "title": "Unknown Source + Independently Verified Fact",
+        "detail": "An anonymous social account (F) uploads a photo whose landmarks and sun shadows are mathematically verified via satellite & SunCalc (1) -> Graded F1."
+      },
+      {
+        "step": "Example B3",
+        "title": "Reputable Outlet + Uncorroborated Claim",
+        "detail": "A respected news wire (B) reports a single-source unconfirmed outage claim (3) -> Graded B3 until corroborated."
+      }
+    ],
+    "mappedModules": ["mod-04", "mod-18", "mod-20", "mod-28", "mod-30"]
+  }
+]

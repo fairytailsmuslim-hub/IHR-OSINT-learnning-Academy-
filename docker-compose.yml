@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ihr-osint-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ihr_osint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ihr_osint_local_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ihr_osint_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ihr_osint_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ihr_osint} -d ${POSTGRES_DB:-ihr_osint_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ihr-osint-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      SESSION_SECRET: ${SESSION_SECRET:-ihr-osint-production-change-me}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-ihr_osint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ihr_osint_local_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ihr_osint_db}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+
+volumes:
+  ihr_osint_pgdata:

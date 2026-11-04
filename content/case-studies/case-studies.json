@@ -1,0 +1,172 @@
+[
+  {
+    "id": "case-01",
+    "slug": "certificate-transparency-typosquat-campaign",
+    "title": "Uncovering Banking Phishing Infrastructure via Certificate Transparency Logs",
+    "stage": "A",
+    "category": "Infrastructure & CT Logs",
+    "sourceOrg": "Public CERT / Defensive Threat Research",
+    "context": "Before launching credential-harvesting emails against a regional financial institution, threat actors registered 18 lookalike domains and issued free automated TLS certificates so victims would see a browser padlock.",
+    "methodology": [
+      "Defenders monitored public Certificate Transparency logs (crt.sh) for brand substrings and common homoglyphs without touching external hosts.",
+      "Extracted Subject Alternative Names (SANs) from newly issued certificates, revealing 11 additional sibling domains bundled on the same X.509 certificate.",
+      "Correlated historical passive DNS resolutions and ASN allocations via Hurricane Electric BGP Toolkit, identifying a single bulletproof VPS subnet.",
+      "Inspected pre-existing urlscan.io snapshots to confirm identical login-kit CSS hashes without sending live analyst traffic."
+    ],
+    "toolsUsed": ["crt.sh", "ICANN Lookup (RDAP)", "Hurricane Electric BGP Toolkit", "urlscan.io"],
+    "lessons": "TLS encryption does not imply legitimacy. Because Certificate Authorities must log certificates publicly in append-only CT Merkle trees, defenders can detect phishing domains hours before the first lure email is sent."
+  },
+  {
+    "id": "case-02",
+    "slug": "chronolocation-via-solar-shadows",
+    "title": "Verifying Recycled Footage Using SunCalc & Historical Weather Data",
+    "stage": "A",
+    "category": "Geolocation & Chronolocation",
+    "sourceOrg": "Public Newsroom Fact-Checking Desk",
+    "context": "A viral video purported to show an industrial explosion occurring at 08:30 local time in winter, sparking commodity market rumors.",
+    "methodology": [
+      "Extracted crisp video keyframes using the InVID Verification Plugin and performed reverse image searches on Yandex Images and TinEye.",
+      "TinEye sorted by 'Oldest' surfaced zero prior exact matches, requiring primary geospatial and temporal verification.",
+      "Matched three distinctive cooling towers and a rail overpass in OpenStreetMap Overpass Turbo to pinpoint exact coordinates.",
+      "Measured shadow azimuth cast by a vertical light pole (cast toward the northeast) and checked SunCalc for the claimed winter morning date—proving the sun could only cast that shadow angle in late afternoon during summer, matching a documented training drill two years prior."
+    ],
+    "toolsUsed": ["InVID / WeVerify Verification Plugin", "TinEye", "Overpass Turbo", "SunCalc"],
+    "lessons": "Geolocation ('where') is only half of verification; chronolocation ('when') prevents authentic old footage from being weaponized in new contexts."
+  },
+  {
+    "id": "case-03",
+    "slug": "maritime-ais-gap-and-sentinel-radar",
+    "title": "Detecting Maritime AIS Transponder Gaps with Sentinel-1 SAR Imagery",
+    "stage": "A",
+    "category": "Geospatial & Satellite OSINT",
+    "sourceOrg": "Open-Source Maritime Compliance Research (Bellingcat / Public Environmental NGOs)",
+    "context": "Cargo vessels suspected of unauthorized ship-to-ship oil transfers turned off their Automatic Identification System (AIS) transponders ('going dark') for 36 hours in international waters.",
+    "methodology": [
+      "Recorded the last known public AIS speed, heading, and timestamp to calculate a maximum search radius polygon.",
+      "Queried the European Space Agency Copernicus Browser for Sentinel-1 Synthetic Aperture Radar (SAR) passes, which penetrate cloud cover and darkness.",
+      "Identified bright metallic radar reflections of two stationary vessels side-by-side inside the calculated drift zone.",
+      "Cross-checked subsequent Sentinel-2 optical imagery on a clear day to measure hull length and deck crane configuration."
+    ],
+    "toolsUsed": ["Copernicus Browser (Sentinel Hub)", "Google Earth Web", "OpenStreetMap"],
+    "lessons": "When digital telemetry (AIS) disappears, physical earth-observation sensors (SAR radar and optical satellites) provide independent, non-spoofable corroboration."
+  },
+  {
+    "id": "case-04",
+    "slug": "wayback-machine-forgotten-subdomain-exposure",
+    "title": "Auditing Legacy Attack Surface Through Wayback CDX & Passive DNS",
+    "stage": "A",
+    "category": "Web Archives & Attack Surface",
+    "sourceOrg": "Authorized External Attack Surface Assessment",
+    "context": "During an authorized passive-only security review, a software company believed all legacy staging documentation portals had been decommissioned.",
+    "methodology": [
+      "Queried the Internet Archive CDX API for `*.company-example` URLs captured over the past eight years, returning passive plain-text URL inventories.",
+      "Filtered archived URLs locally with `grep` and `sort -u` for `.pdf`, `.json`, and `/api/v1/` documentation paths.",
+      "Cross-referenced discovered hostnames against SecurityTrails passive DNS to distinguish retired CNAMEs (dangling subdomain takeover candidates) from active IPs.",
+      "Delivered a prioritized remediation list without sending a single HTTP request to the client's servers."
+    ],
+    "toolsUsed": ["Wayback Machine (Internet Archive)", "SecurityTrails", "crt.sh", "CyberChef"],
+    "lessons": "Decommissioning a link on a homepage does not erase historical crawl indexes or dangling CNAME records."
+  },
+  {
+    "id": "case-05",
+    "slug": "document-metadata-attribution-audit",
+    "title": "Identifying Unintended Internal Path Leaks in Public PDF Publications",
+    "stage": "A",
+    "category": "Metadata & OPSEC",
+    "sourceOrg": "Corporate OPSEC Red-Team Readiness Case",
+    "context": "An organization published 40 quarterly investor PDF brochures on its public press page without sanitizing document properties.",
+    "methodology": [
+      "Downloaded publicly linked press PDFs inside an isolated research VM and inspected them locally offline with ExifTool.",
+      "Extracted `CreatorTool`, `Producer`, and `Author` XMP fields revealing exact macOS/Windows build versions, internal Active Directory usernames (`jsmith`), and local network share paths.",
+      "Mapped the email format (`first_initial + last_name`) against public MX and SPF records to demonstrate spear-phishing exposure.",
+      "Implemented an automated CI/CD ExifTool metadata-stripping gate prior to public file uploads."
+    ],
+    "toolsUsed": ["ExifTool", "MXToolbox", "Google Advanced Search"],
+    "lessons": "Publicly downloadable documents routinely leak internal usernames and software patch levels needed for MITRE ATT&CK T1589/T1592."
+  },
+  {
+    "id": "case-06",
+    "slug": "favicon-hash-c2-cluster-pivoting",
+    "title": "Pivoting Across Command-and-Control Servers via Favicon Hashes in Shodan",
+    "stage": "B",
+    "category": "Threat Intelligence & Infrastructure",
+    "sourceOrg": "Public CTI Vendor Threat Research",
+    "context": "A SOC team blocked a single Cobalt Strike / phishing management IP observed in an outbound proxy alert, wanting to proactively identify sibling servers in the same campaign.",
+    "methodology": [
+      "Queried the blocked IP in Shodan and Censys passive indexes rather than probing the live server.",
+      "Noted a distinctive non-standard HTTP `favicon.ico` MurmurHash3 value and a custom self-signed TLS issuer string.",
+      "Pivoted in Shodan on `http.favicon.hash` combined with the TLS serial pattern, uncovering 14 unblocked servers deployed across three hosting providers in the past 72 hours.",
+      "Exported defanged IOCs (`hxxp://`, `[.]`) with TLP:AMBER+STRICT markings into MISP and SIEM blocklists."
+    ],
+    "toolsUsed": ["Shodan", "Censys Search", "VirusTotal", "MISP Threat Sharing"],
+    "lessons": "Blocking a single IP sits at the bottom of the Pyramid of Pain; pivoting on infrastructure artifacts (favicon hashes, TLS certificates) uncovers entire adversary clusters."
+  },
+  {
+    "id": "case-07",
+    "slug": "soc-alert-noise-reduction-greynoise",
+    "title": "Triaging Midnight Port-Scan Alerts Using GreyNoise & RIPEstat",
+    "stage": "B",
+    "category": "SOC Triage & Incident Response",
+    "sourceOrg": "Enterprise SOC L1 Case Study",
+    "context": "A junior SOC analyst received 120 firewall alerts at 02:00 UTC showing inbound TCP/443 requests with unusual User-Agent headers against edge load balancers.",
+    "methodology": [
+      "Extracted unique source IPs using CLI `sort | uniq -c` and checked them in GreyNoise Visualizer.",
+      "Confirmed 118 of the 120 IPs belonged to verified benign academic and internet-census scanners (Censys and Shadowserver) scanning the entire IPv4 space.",
+      "Investigated the remaining 2 IPs—absent from benign scanner lists—in Abuse.ch ThreatFox, RIPEstat, and VirusTotal passive DNS.",
+      "Discovered those 2 IPs were exclusively targeting a newly disclosed CVE listed in CISA KEV, escalating a focused P1 incident ticket within 12 minutes."
+    ],
+    "toolsUsed": ["GreyNoise Visualizer", "RIPEstat", "abuse.ch URLhaus & ThreatFox", "CISA Known Exploited Vulnerabilities (KEV)"],
+    "lessons": "Separating mass internet background noise from targeted exploitation is one of the highest-impact OSINT skills for SOC L1 analysts."
+  },
+  {
+    "id": "case-08",
+    "slug": "supply-chain-beneficial-ownership-due-diligence",
+    "title": "Tracing Cross-Border Shell Subsidiaries Using GLEIF LEI & Companies House",
+    "stage": "B",
+    "category": "Corporate & Sanctions OSINT",
+    "sourceOrg": "Supply-Chain Compliance & Investigative Journalism",
+    "context": "A procurement team needed to verify whether a newly incorporated European electronics distributor was covertly controlled by a sanctioned parent conglomerate.",
+    "methodology": [
+      "Looked up the vendor's Legal Entity Identifier in GLEIF Search to inspect Level 2 'Direct Accounting Consolidating Parent' disclosures.",
+      "Traced UK intermediary holding companies in UK Companies House, reviewing historical Persons with Significant Control (PSC) filings and shared registered office addresses.",
+      "Cross-checked past and current corporate officers against OpenSanctions (OFAC/EU consolidated lists), corroborating exact date-of-birth and middle-name transliterations.",
+      "Documented an evidence chain backed exclusively by primary statutory PDFs with Admiralty A1 grading."
+    ],
+    "toolsUsed": ["GLEIF LEI Search", "UK Companies House", "OpenCorporates", "OpenSanctions"],
+    "lessons": "Corporate due diligence relies on primary statutory registries and unique entity identifiers (LEIs, company numbers) rather than name-only searches."
+  },
+  {
+    "id": "case-09",
+    "slug": "deforestation-and-supply-verification-bellingcat-method",
+    "title": "Environmental Supply-Chain Verification with Optical Satellite Timelines",
+    "stage": "A",
+    "category": "Environmental & Public-Interest OSINT",
+    "sourceOrg": "Open-Source Environmental Investigation",
+    "context": "An agricultural supplier certified that zero protected forest land had been cleared after a statutory cutoff date.",
+    "methodology": [
+      "Located concession boundary coordinates published in public ministry gazettes and imported the polygon into OpenStreetMap / Google Earth.",
+      "Reviewed monthly Sentinel-2 false-color infrared composites in Copernicus Browser (where healthy vegetation appears bright crimson and bare cleared soil appears grey-brown).",
+      "Pinpointed the exact two-week window when haul roads and clearing appeared—eight months after the pledged cutoff date.",
+      "Archived every ministry PDF and satellite tile date to ensure full reproducibility by independent auditors."
+    ],
+    "toolsUsed": ["Copernicus Browser (Sentinel Hub)", "Google Earth Web", "Wayback Machine (Internet Archive)"],
+    "lessons": "Multi-spectral satellite archives allow anyone to audit environmental and infrastructure claims across multi-year timelines."
+  },
+  {
+    "id": "case-10",
+    "slug": "competing-hypotheses-attribution-discipline",
+    "title": "Avoiding False-Flag Attribution Bias with ACH & Admiralty Grading",
+    "stage": "B",
+    "category": "Structured Analytic Techniques",
+    "sourceOrg": "CTI Analytic Tradecraft Review",
+    "context": "During a website defacement incident, attackers left Cyrillic strings in HTML comments and routed traffic through an Eastern European VPN exit node, prompting hasty verbal claims of nation-state attribution.",
+    "methodology": [
+      "Constructed an Analysis of Competing Hypotheses (ACH) matrix testing three hypotheses: H1 State Actor, H2 Financially Motivated Cybercrime Group, H3 Opportunistic Script Kiddie using public defacement templates.",
+      "Searched the exact HTML template hash on GitHub and Wayback archives, finding it was a 6-year-old public forum template with untouched default comments.",
+      "Checked CISA KEV and server logs, showing exploitation of an unpatched 2-year-old CMS plugin scanned globally weeks earlier.",
+      "Issued a BLUF executive brief grading attribution to a state actor as 'Highly Improbable' and focusing remediation on CMS patch governance."
+    ],
+    "toolsUsed": ["MITRE ATT&CK Knowledge Base", "CyberChef", "GreyNoise Visualizer", "Wayback Machine (Internet Archive)"],
+    "lessons": "Technical artifacts like language strings and VPN exit IPs are trivially spoofed; ACH protects analysts from confirmation bias."
+  }
+]

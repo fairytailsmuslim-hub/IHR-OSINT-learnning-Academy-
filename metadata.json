@@ -1,0 +1,6 @@
+{
+  "name": "IHR OSINT — Open Source Intelligence Academy",
+  "description": "Two-stage Open Source Intelligence (OSINT) learning academy from beginner to PRO with passive recon foundations, threat intelligence & SOC modules, fill-in-the-blank labs, frameworks, real tools directory, and certificates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

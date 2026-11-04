@@ -1,0 +1,970 @@
+[
+  {
+    "slug": "lab-01-osint-cycle-mapping",
+    "moduleId": "mod-01",
+    "stage": "A",
+    "title": "Lab 01: Converting Vague Prompts into Scoped OSINT Requirements",
+    "durationMinutes": 20,
+    "difficulty": "Beginner",
+    "objective": "Transform a vague investigative request about `example.com` into three structured, answerable Intelligence Requirements (IRs) and map each step to the OSINT Cycle.",
+    "prerequisites": ["No prior technical setup required"],
+    "steps": [
+      "Read the scenario prompt: 'Tell me everything publicly known about the domain example.com.'",
+      "Break that overly broad prompt into 3 bounded Intelligence Requirements: IR-1 (Registration & authoritative body via ICANN RDAP), IR-2 (Published DNS records A/AAAA/MX/TXT), and IR-3 (Historical archival footprint via Wayback Machine).",
+      "Open https://lookup.icann.org in a browser tab and look up `example.com`.",
+      "Record the authoritative IANA/ICANN status codes (`clientDeleteProhibited`, etc.) and registry organization in your lab notes.",
+      "Verify which phase of the OSINT Cycle corresponds to defining IR-1..IR-3 vs querying ICANN RDAP."
+    ],
+    "expectedOutcome": "A written 3-row Collection Plan mapping each Intelligence Requirement to an authorized passive source and UTC timestamp.",
+    "selfCheck": [
+      {
+        "id": "l01-q1",
+        "prompt": "Which phase of the OSINT Cycle comes FIRST before any data collection?",
+        "acceptedAnswers": ["planning", "planning and direction", "direction"],
+        "hint": "Think: Planning & ...",
+        "explanation": "Planning & Direction always precedes Collection so you define lawful, specific Intelligence Requirements."
+      },
+      {
+        "id": "l01-q2",
+        "prompt": "According to RFC 2606 and ICANN RDAP, which organization reserves `example.com` for documentation?",
+        "acceptedAnswers": ["iana", "internet assigned numbers authority"],
+        "hint": "Four-letter acronym starting with I.",
+        "explanation": "IANA (Internet Assigned Numbers Authority) reserves example.com, example.net, and example.org under RFC 2606."
+      }
+    ]
+  },
+  {
+    "slug": "lab-02-passive-boundary-audit",
+    "moduleId": "mod-02",
+    "stage": "A",
+    "title": "Lab 02: Classifying Zero-Touch Passive vs Active Actions",
+    "durationMinutes": 20,
+    "difficulty": "Beginner",
+    "objective": "Audit ten common reconnaissance actions and classify which ones stay strictly inside the zero-touch passive boundary.",
+    "prerequisites": ["Module 1"],
+    "steps": [
+      "Review these four actions against target `iana.org`: (A) Querying `https://crt.sh/?q=iana.org`, (B) Running `nmap -sS iana.org`, (C) Reading Wayback snapshots on `web.archive.org`, (D) Running `gobuster` directory brute-forcing.",
+      "Trace the network packet destination for each action: does your packet go to a public third-party archive (`crt.sh`, `archive.org`) or directly to `iana.org`?",
+      "Document why (B) and (D) cross into active reconnaissance and require explicit written Rules of Engagement (RoE)."
+    ],
+    "expectedOutcome": "Clear packet-destination classification table separating zero-touch passive lookups from active probing.",
+    "selfCheck": [
+      {
+        "id": "l02-q1",
+        "prompt": "Querying crt.sh for a domain's TLS certificates sends packets to crt.sh rather than the target. Is this passive or active?",
+        "acceptedAnswers": ["passive", "passive recon", "passive reconnaissance"],
+        "hint": "Zero packets touch the target server.",
+        "explanation": "Because your browser only queries the public Certificate Transparency database (crt.sh), zero packets touch the target."
+      },
+      {
+        "id": "l02-q2",
+        "prompt": "What three-letter acronym stands for the written document defining authorized scope and permitted techniques?",
+        "acceptedAnswers": ["roe", "rules of engagement"],
+        "hint": "Rules of ...",
+        "explanation": "Rules of Engagement (RoE) formally define scope, dates, allowed methods, and legal authorization."
+      }
+    ]
+  },
+  {
+    "slug": "lab-03-browser-isolation-check",
+    "moduleId": "mod-03",
+    "stage": "A",
+    "title": "Lab 03: Auditing Browser Footprint & Profile Compartmentalization",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Create a dedicated, clean browser profile for OSINT study and inspect what HTTP headers your browser sends to websites.",
+    "prerequisites": ["Module 2"],
+    "steps": [
+      "Create a separate browser profile (e.g., Firefox Multi-Account Containers or a clean Chromium profile) with zero personal accounts logged in.",
+      "Open Developer Tools (F12 -> Network tab) and visit `https://www.iana.org/domains/reserved`.",
+      "Click the main document request and inspect Request Headers: note `User-Agent`, `Accept-Language`, and absence of personal session cookies.",
+      "Verify WebRTC leak settings (`media.peerconnection.enabled` in Firefox `about:config` when using a VPN) and document OPSEC findings."
+    ],
+    "expectedOutcome": "Isolated study browser profile verified free of personal cookies, autofill data, and extension telemetry.",
+    "selfCheck": [
+      {
+        "id": "l03-q1",
+        "prompt": "Which HTTP request header reveals your browser name and operating system to every site you visit?",
+        "acceptedAnswers": ["user-agent", "user agent"],
+        "hint": "Hyphenated header starting with User-",
+        "explanation": "The User-Agent header discloses browser engine, version, and host OS architecture."
+      },
+      {
+        "id": "l03-q2",
+        "prompt": "Which browser real-time communication feature can leak local/ISP IP addresses even while using a VPN if unconfigured?",
+        "acceptedAnswers": ["webrtc", "web rtc"],
+        "hint": "Starts with Web and ends with RTC.",
+        "explanation": "WebRTC STUN requests can expose underlying network interface IPs unless restricted."
+      }
+    ]
+  },
+  {
+    "slug": "lab-04-ethical-scoping-review",
+    "moduleId": "mod-04",
+    "stage": "A",
+    "title": "Lab 04: Applying Proportionality & Data Minimization",
+    "durationMinutes": 20,
+    "difficulty": "Beginner",
+    "objective": "Evaluate three real-world research requests for proportionality, privacy law compliance, and anti-doxxing boundaries.",
+    "prerequisites": ["Module 3"],
+    "steps": [
+      "Review Case 1: Checking whether a vendor domain was registered yesterday before wiring an invoice payment.",
+      "Review Case 2: Publishing a private citizen's residential address during an online dispute.",
+      "Apply Data Minimization and Public-Interest tests: confirm Case 1 is lawful fraud prevention using corporate/domain records, while Case 2 is unethical doxxing and must be refused.",
+      "Write a 4-point personal OSINT Code of Conduct in your study notes."
+    ],
+    "expectedOutcome": "Completed ethical impact checklist distinguishing legitimate pattern analysis from prohibited doxxing.",
+    "selfCheck": [
+      {
+        "id": "l04-q1",
+        "prompt": "What privacy principle states you should collect only the minimum data strictly required for a lawful objective?",
+        "acceptedAnswers": ["data minimization", "minimization", "data minimisation"],
+        "hint": "Data m...",
+        "explanation": "Data minimization (core to GDPR and ethical OSINT) prevents hoarding unnecessary personal data."
+      },
+      {
+        "id": "l04-q2",
+        "prompt": "What is the term for unethically publishing private residential or contact details to harass an individual?",
+        "acceptedAnswers": ["doxxing", "doxing"],
+        "hint": "Starts with dox...",
+        "explanation": "Doxxing violates professional OSINT ethics and privacy statutes worldwide."
+      }
+    ]
+  },
+  {
+    "slug": "lab-05-dns-records-analysis",
+    "moduleId": "mod-05",
+    "stage": "A",
+    "title": "Lab 05: Inspecting Public DNS Records for example.com & iana.org",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Identify A, AAAA, MX, NS, and TXT records for reserved public domains using public DNS resolvers.",
+    "prerequisites": ["Module 4"],
+    "steps": [
+      "Query public DNS records for `example.com` using Google Public DNS web resolver (`https://dns.google/query?name=example.com&type=A`) or `dig example.com ANY`.",
+      "Repeat for `AAAA` (IPv6), `NS` (authoritative nameservers), `MX` (mail servers), and `TXT` (SPF policy).",
+      "Notice `v=spf1 -all` in `example.com`'s TXT record and interpret what `-all` tells mail receivers (this domain sends zero legitimate email!)."
+    ],
+    "expectedOutcome": "Complete DNS table for `example.com` recording IPv4, IPv6, NS, MX, and SPF TXT values.",
+    "selfCheck": [
+      {
+        "id": "l05-q1",
+        "prompt": "Which DNS record type maps a hostname to a 128-bit IPv6 address?",
+        "acceptedAnswers": ["aaaa", "aaaa record"],
+        "hint": "Four identical letters.",
+        "explanation": "AAAA ('quad-A') records map domain names to 128-bit IPv6 addresses, whereas A records map to 32-bit IPv4."
+      },
+      {
+        "id": "l05-q2",
+        "prompt": "In `v=spf1 -all`, which email authentication standard is defined inside this DNS TXT record?",
+        "acceptedAnswers": ["spf", "sender policy framework"],
+        "hint": "Three-letter acronym inside v=spf1.",
+        "explanation": "Sender Policy Framework (SPF) specifies authorized sending servers; `-all` hard-fails all unauthorized spoofed mail."
+      }
+    ]
+  },
+  {
+    "slug": "lab-06-robots-and-sitemap-inspection",
+    "moduleId": "mod-06",
+    "stage": "A",
+    "title": "Lab 06: Analyzing Crawler Directives & Cached Index Mechanics",
+    "durationMinutes": 20,
+    "difficulty": "Beginner",
+    "objective": "Understand how search engines obey `robots.txt` and `sitemap.xml` using archived public snapshots.",
+    "prerequisites": ["Module 5"],
+    "steps": [
+      "Open the Wayback Machine (`https://web.archive.org`) and view an archived copy of `https://www.wikipedia.org/robots.txt`.",
+      "Identify `User-agent:` blocks, `Disallow:` rules, and `Sitemap:` declarations.",
+      "Record why `robots.txt` is an indexing politeness standard (RFC 9309) rather than an access-control security boundary."
+    ],
+    "expectedOutcome": "Annotated breakdown of `User-agent`, `Disallow`, and `Sitemap` directives from an archived `robots.txt`.",
+    "selfCheck": [
+      {
+        "id": "l06-q1",
+        "prompt": "What root filename instructs search crawlers which URL paths not to index?",
+        "acceptedAnswers": ["robots.txt"],
+        "hint": "Ends with .txt",
+        "explanation": "robots.txt (standardized in RFC 9309) provides crawler exclusion directives at the site root."
+      },
+      {
+        "id": "l06-q2",
+        "prompt": "What XML file commonly referenced in robots.txt lists public URLs and lastmod timestamps for indexing?",
+        "acceptedAnswers": ["sitemap.xml", "sitemap"],
+        "hint": "Starts with sitemap...",
+        "explanation": "sitemap.xml enumerates canonical public pages and update timestamps to aid search engine indexing."
+      }
+    ]
+  },
+  {
+    "slug": "lab-07-magic-bytes-and-hashing",
+    "moduleId": "mod-07",
+    "stage": "A",
+    "title": "Lab 07: Verifying File Signatures (Magic Bytes) & SHA-256 Integrity",
+    "durationMinutes": 30,
+    "difficulty": "Beginner",
+    "objective": "Create a local test file on your own computer, compute its SHA-256 digest, and inspect JPEG/PDF magic numbers in CyberChef.",
+    "prerequisites": ["Module 6"],
+    "steps": [
+      "Open CyberChef (`https://gchq.github.io/CyberChef/`)—which runs 100% locally in your browser.",
+      "Load any personal test photo or create a tiny PNG/JPEG from scratch, then apply the 'Detect File Type' and 'To Hex' operations.",
+      "Verify the leading hexadecimal bytes: `FF D8 FF` for JPEG, `89 50 4E 47` for PNG, or `25 50 44 46` (`%PDF`) for PDF.",
+      "Add the 'SHA2' (256-bit) operation in CyberChef, record the 64-character hex hash, then change 1 single byte and observe the avalanche effect."
+    ],
+    "expectedOutcome": "Verified hex magic signatures and SHA-256 before/after digests demonstrating tamper detection.",
+    "selfCheck": [
+      {
+        "id": "l07-q1",
+        "prompt": "What are the first four hexadecimal characters (magic number) of a standard JPEG image?",
+        "acceptedAnswers": ["ffd8", "ff d8", "0xffd8"],
+        "hint": "Starts with FF...",
+        "explanation": "Every standard JPEG stream begins with Start of Image (SOI) marker bytes FF D8 (followed by FF)."
+      },
+      {
+        "id": "l07-q2",
+        "prompt": "How many hexadecimal characters long is a SHA-256 hash digest?",
+        "acceptedAnswers": ["64", "sixty-four"],
+        "hint": "256 bits divided by 4 bits per hex character.",
+        "explanation": "256 bits / 4 bits per hex digit = 64 hexadecimal characters."
+      }
+    ]
+  },
+  {
+    "slug": "lab-08-cli-text-pivoting",
+    "moduleId": "mod-08",
+    "stage": "A",
+    "title": "Lab 08: Filtering Subdomain Lists Locally with Linux CLI Pipes",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Use `grep`, `sort`, `uniq`, and `wc` on a sample passive CT log export to deduplicate hostnames.",
+    "prerequisites": ["Module 7"],
+    "steps": [
+      "Save a plain-text list of 20 sample `*.example.org` hostnames containing duplicates and wildcard `*.` prefixes into `ct_sample.txt`.",
+      "Run `cat ct_sample.txt | sed 's/^\\*\\.//' | tr '[:upper:]' '[:lower:]' | sort -u` to normalize case, strip wildcard prefixes, and deduplicate.",
+      "Pipe the output to `grep -E '(dev|staging|vpn)'` to isolate high-interest infrastructure naming patterns.",
+      "Count unique entries with `wc -l`."
+    ],
+    "expectedOutcome": "Clean, lowercase, deduplicated hostname list produced purely with standard POSIX command-line tools.",
+    "selfCheck": [
+      {
+        "id": "l08-q1",
+        "prompt": "Which flag on the Linux `sort` command outputs only unique (deduplicated) lines?",
+        "acceptedAnswers": ["-u", "--unique"],
+        "hint": "Single dash followed by the first letter of unique.",
+        "explanation": "`sort -u` sorts lines alphabetically and removes duplicates in a single pass."
+      },
+      {
+        "id": "l08-q2",
+        "prompt": "Which Linux CLI utility inspects magic bytes to report a file's actual data type regardless of extension?",
+        "acceptedAnswers": ["file"],
+        "hint": "Four-letter command literally named after what it inspects.",
+        "explanation": "The POSIX `file` command checks magic byte signatures against libmagic definitions."
+      }
+    ]
+  },
+  {
+    "slug": "lab-09-precision-search-queries",
+    "moduleId": "mod-09",
+    "stage": "A",
+    "title": "Lab 09: Crafting Precision Search Operators Across Official Docs",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Construct Boolean and field-restricted search queries (`site:`, `filetype:`, `intitle:`) targeting public standards bodies (`ietf.org`, `nist.gov`).",
+    "prerequisites": ["Module 8"],
+    "steps": [
+      "Construct a query finding PDF publications on `csrc.nist.gov` mentioning 'threat intelligence': `site:csrc.nist.gov filetype:pdf \"threat intelligence\"`.",
+      "Construct a query finding RFC pages on `datatracker.ietf.org` with 'Certificate Transparency' in the HTML title: `site:datatracker.ietf.org intitle:\"Certificate Transparency\"`.",
+      "Test excluding noisy subdomains with the minus operator (`-site:mailarchive.ietf.org`) and compare result precision across Google, Bing, and DuckDuckGo."
+    ],
+    "expectedOutcome": "Three verified multi-operator queries returning high-signal primary technical documents.",
+    "selfCheck": [
+      {
+        "id": "l09-q1",
+        "prompt": "Which search operator restricts results strictly to a specific domain or subdomain?",
+        "acceptedAnswers": ["site:", "site"],
+        "hint": "Four letters followed by a colon.",
+        "explanation": "`site:example.org` restricts search results to pages indexed under that domain."
+      },
+      {
+        "id": "l09-q2",
+        "prompt": "Which search operator filters results by document extension such as pdf, xlsx, or docx?",
+        "acceptedAnswers": ["filetype:", "filetype", "ext:", "ext"],
+        "hint": "Starts with file...",
+        "explanation": "`filetype:pdf` (or `ext:pdf`) restricts indexed documents by file format."
+      }
+    ]
+  },
+  {
+    "slug": "lab-10-wayback-cdx-timeline",
+    "moduleId": "mod-10",
+    "stage": "A",
+    "title": "Lab 10: Querying Wayback Machine CDX Index for Historical Changes",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Retrieve historical snapshots and plain-text CDX capture metadata for `example.com` without touching the live server.",
+    "prerequisites": ["Module 9"],
+    "steps": [
+      "Open `https://web.archive.org/web/*/example.com` and compare a 2005 capture of `example.com` with a 2024 capture.",
+      "Note how the authoritative explanation text and RFC references evolved over two decades.",
+      "Inspect the CDX API endpoint format: `https://web.archive.org/cdx/search/cdx?url=example.com&output=json&limit=5` to see `[urlkey, timestamp, original, mimetype, statuscode, digest, length]`.",
+      "Observe how identical `digest` hashes across dates prove a page did NOT change between two crawls."
+    ],
+    "expectedOutcome": "Timeline log comparing historical `example.com` revisions and interpreting CDX digest fields.",
+    "selfCheck": [
+      {
+        "id": "l10-q1",
+        "prompt": "What is the name of the Wayback Machine's index API (`.../cdx/search/cdx`) that returns tabular capture metadata?",
+        "acceptedAnswers": ["cdx", "cdx api", "cdx server"],
+        "hint": "Three-letter acronym in the URL path.",
+        "explanation": "The Capture Index (CDX) API returns structured capture timestamps, HTTP codes, and content hashes."
+      },
+      {
+        "id": "l10-q2",
+        "prompt": "In a Wayback Machine snapshot URL (`.../web/20230501123000/...`), how many digits represent the YYYYMMDDHHMMSS timestamp?",
+        "acceptedAnswers": ["14", "fourteen"],
+        "hint": "4 (year) + 2 (month) + 2 (day) + 2 (hour) + 2 (min) + 2 (sec).",
+        "explanation": "Wayback timestamps use a 14-digit UTC format: YYYYMMDDHHMMSS."
+      }
+    ]
+  },
+  {
+    "slug": "lab-11-rdap-and-rir-allocation",
+    "moduleId": "mod-11",
+    "stage": "A",
+    "title": "Lab 11: Tracing IP Ownership Across ICANN RDAP & Regional Registries",
+    "durationMinutes": 25,
+    "difficulty": "Beginner",
+    "objective": "Trace `93.184.215.14` / reserved documentation netblocks (`192.0.2.0/24`) across ARIN/RIPE RDAP to distinguish domain registrars from IP hosting owners.",
+    "prerequisites": ["Module 10"],
+    "steps": [
+      "Look up `iana.org` in `https://lookup.icann.org` to inspect domain-level registrar and nameserver records.",
+      "Look up RFC 5737 documentation block `192.0.2.1` (`TEST-NET-1`) in `https://search.arin.net`.",
+      "Contrast Domain Registration (ICANN/Registrar) vs IP Netblock Allocation (IANA -> RIR -> ISP/Cloud ASN)."
+    ],
+    "expectedOutcome": "Clear two-layer ownership diagram separating Domain Registrar metadata from RIR Netblock/ASN ownership.",
+    "selfCheck": [
+      {
+        "id": "l11-q1",
+        "prompt": "Which modern HTTPS/JSON protocol has officially replaced legacy port-43 WHOIS at ICANN?",
+        "acceptedAnswers": ["rdap", "registration data access protocol"],
+        "hint": "Four-letter acronym starting with R.",
+        "explanation": "RDAP (Registration Data Access Protocol) delivers standardized JSON responses over HTTPS."
+      },
+      {
+        "id": "l11-q2",
+        "prompt": "Which Regional Internet Registry (RIR) manages IP allocations for Europe and the Middle East?",
+        "acceptedAnswers": ["ripe", "ripe ncc"],
+        "hint": "Starts with RIPE...",
+        "explanation": "RIPE NCC serves Europe, the Middle East, and parts of Central Asia."
+      }
+    ]
+  },
+  {
+    "slug": "lab-12-crtsh-passive-discovery",
+    "moduleId": "mod-12",
+    "stage": "A",
+    "title": "Lab 12: Passive Subdomain Enumeration via Certificate Transparency (crt.sh)",
+    "durationMinutes": 30,
+    "difficulty": "Beginner",
+    "objective": "Query `crt.sh` using wildcard SQL `%` syntax and JSON output on `iana.org` to build a 100% passive subdomain inventory.",
+    "prerequisites": ["Module 11"],
+    "steps": [
+      "Navigate to `https://crt.sh/?q=%25.iana.org` (`%.iana.org`) in your study browser.",
+      "Inspect the `Matching Identities` (Subject Alternative Names) and `Issuer Name` columns.",
+      "Append `&output=json` (`https://crt.sh/?q=%25.iana.org&output=json`) to view machine-readable JSON entries.",
+      "Record 5 unique `*.iana.org` subdomains discovered without sending a single DNS brute-force packet."
+    ],
+    "expectedOutcome": "Deduplicated passive subdomain table with certificate validity dates and issuing CAs.",
+    "selfCheck": [
+      {
+        "id": "l12-q1",
+        "prompt": "Which X.509 certificate extension field lists multiple subdomains covered by a single TLS certificate?",
+        "acceptedAnswers": ["san", "subject alternative name", "subject alternative names"],
+        "hint": "Three-letter acronym: Subject Alternative N...",
+        "explanation": "Subject Alternative Name (SAN) fields frequently reveal sibling domains and subdomains on shared certs."
+      },
+      {
+        "id": "l12-q2",
+        "prompt": "What URL query parameter (`output=...`) tells crt.sh to return structured JSON data?",
+        "acceptedAnswers": ["json", "output=json"],
+        "hint": "JavaScript Object Notation.",
+        "explanation": "Appending `&output=json` to crt.sh queries returns structured JSON ideal for local CLI parsing."
+      }
+    ]
+  },
+  {
+    "slug": "lab-13-passive-dns-correlation",
+    "moduleId": "mod-13",
+    "stage": "A",
+    "title": "Lab 13: Mapping ASN Prefixes & Historical DNS Without Active Scanning",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Inspect Autonomous System AS15133 / IANA ASNs in Hurricane Electric BGP Toolkit (`bgp.he.net`) to understand CDN vs dedicated IP hosting.",
+    "prerequisites": ["Module 12"],
+    "steps": [
+      "Open `https://bgp.he.net` and search `iana.org`.",
+      "Inspect the `DNS`, `IP Info`, and `Prefixes v4 / v6` tabs for the returned ASN.",
+      "Determine why seeing 500 unrelated domains on a Cloudflare or Fastly CDN IP does NOT mean those 500 organizations own each other!"
+    ],
+    "expectedOutcome": "ASN correlation note explaining dedicated enterprise netblocks vs multi-tenant CDN/cloud reverse proxies.",
+    "selfCheck": [
+      {
+        "id": "l13-q1",
+        "prompt": "What three-letter routing acronym identifies an organization's numbered network of IP prefixes (e.g., AS13335)?",
+        "acceptedAnswers": ["asn", "autonomous system number"],
+        "hint": "Autonomous System N...",
+        "explanation": "An Autonomous System Number (ASN) uniquely identifies a BGP routing domain."
+      },
+      {
+        "id": "l13-q2",
+        "prompt": "Does DNS wordlist brute-forcing (`gobuster dns` / `massdns`) qualify as Stage A passive OSINT? (Answer yes or no)",
+        "acceptedAnswers": ["no"],
+        "hint": "Wordlist brute-forcing sends thousands of live queries.",
+        "explanation": "No—DNS brute-forcing actively generates high-volume query traffic and is outside passive OSINT."
+      }
+    ]
+  },
+  {
+    "slug": "lab-14-banner-index-filters",
+    "moduleId": "mod-14",
+    "stage": "A",
+    "title": "Lab 14: Writing Shodan & Censys Search Queries Safely",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Master Shodan and Censys search syntax (`org:`, `asn:`, `ssl.cert.subject.cn:`, `http.title:`) conceptually and passively.",
+    "prerequisites": ["Module 13"],
+    "steps": [
+      "Review Shodan filter syntax documentation: `ssl.cert.subject.cn:\"example.com\"`, `port:443`, `org:\"Internet Assigned Numbers Authority\"`.",
+      "Compare equivalent Censys Search query syntax: `services.tls.certificates.leaf_data.names: \"example.com\"`.",
+      "Explain why searching `ssl.cert.subject.cn:` often uncovers origin servers even when a domain's public A record sits behind a CDN!"
+    ],
+    "expectedOutcome": "Cheat-sheet translating 5 defensive asset discovery questions into both Shodan and Censys passive queries.",
+    "selfCheck": [
+      {
+        "id": "l14-q1",
+        "prompt": "In Shodan query syntax, which filter searches HTML `<title>` tags (`http.____`)?",
+        "acceptedAnswers": ["http.title", "title", "http.title:"],
+        "hint": "http.t...",
+        "explanation": "`http.title:\"Login\"` filters pre-indexed HTTP banners by page title."
+      },
+      {
+        "id": "l14-q2",
+        "prompt": "When you search Shodan's web database, are packets sent from your machine to the indexed servers? (Answer yes or no)",
+        "acceptedAnswers": ["no"],
+        "hint": "You are only querying Shodan's search database.",
+        "explanation": "No—querying Shodan's database only searches previously collected banners; never connect directly to discovered hosts."
+      }
+    ]
+  },
+  {
+    "slug": "lab-15-username-handle-correlation",
+    "moduleId": "mod-15",
+    "stage": "A",
+    "title": "Lab 15: Corroborating Public Handles & Avoiding False-Positive Collisions",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Evaluate username reuse across public platforms using corroborating pivot anchors (bio links, PGP keys, avatar hashes, join timelines).",
+    "prerequisites": ["Module 14"],
+    "steps": [
+      "Examine a synthetic case of handle `@alex_sec` appearing on GitHub, Keybase, Mastodon, and a gaming forum.",
+      "Compare secondary anchors: GitHub links to personal blog `alex-sec.example` and lists PGP fingerprint `4F9A...`; Mastodon uses `rel=\"me\"` verification back to `alex-sec.example`; the gaming forum account was registered in a different decade with conflicting language/timezone.",
+      "Document why `@alex_sec` on GitHub + Mastodon is corroborated, while the gaming forum handle is a username collision."
+    ],
+    "expectedOutcome": "Corroboration matrix showing strong cryptographic/bidirectional links (`rel=me`, PGP) vs weak handle-only collisions.",
+    "selfCheck": [
+      {
+        "id": "l15-q1",
+        "prompt": "Does an identical username alone on two websites prove both accounts belong to the same person? (Answer yes or no)",
+        "acceptedAnswers": ["no"],
+        "hint": "Common handles collide constantly.",
+        "explanation": "No—handle collisions are extremely common; independent corroborating anchors are mandatory."
+      },
+      {
+        "id": "l15-q2",
+        "prompt": "Which HTML link attribute (`rel=\"__\"`) is used on Mastodon and personal websites to prove bidirectional profile ownership?",
+        "acceptedAnswers": ["me", "rel=\"me\"", "rel=me"],
+        "hint": "Two-letter pronoun.",
+        "explanation": "Linking both ways with `rel=\"me\"` cryptographically/structurally confirms the site owner controls the social profile."
+      }
+    ]
+  },
+  {
+    "slug": "lab-16-spf-dmarc-and-hibp-concepts",
+    "moduleId": "mod-16",
+    "stage": "A",
+    "title": "Lab 16: Auditing Domain Anti-Spoofing (SPF/DMARC) & k-Anonymity Breach Checks",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Inspect `_dmarc` DNS TXT policies and understand how Have I Been Pwned protects privacy via k-anonymity.",
+    "prerequisites": ["Module 15"],
+    "steps": [
+      "Query `_dmarc.ietf.org` TXT record via `dig TXT _dmarc.ietf.org` or MXToolbox.",
+      "Identify the `v=DMARC1; p=...; rua=...` tags (`p=none`, `p=quarantine`, or `p=reject`).",
+      "Review how HIBP's Pwned Passwords API sends only the first 5 characters of a SHA-1 hash prefix so the full secret never leaves the client."
+    ],
+    "expectedOutcome": "Email posture scorecard explaining SPF + DKIM + DMARC `p=reject` and ethical breach notification rules.",
+    "selfCheck": [
+      {
+        "id": "l16-q1",
+        "prompt": "Which DNS subdomain prefix (`_____`.domain.com) stores a domain's DMARC TXT policy?",
+        "acceptedAnswers": ["_dmarc", "_dmarc."],
+        "hint": "Starts with an underscore followed by dmarc.",
+        "explanation": "DMARC policies are always published as TXT records at `_dmarc.<domain>`."
+      },
+      {
+        "id": "l16-q2",
+        "prompt": "In a DMARC record, which policy value (`p=______`) instructs mail servers to outright block failing spoofed emails?",
+        "acceptedAnswers": ["reject", "p=reject"],
+        "hint": "Stronger than `none` and `quarantine`.",
+        "explanation": "`p=reject` instructs receiving mail servers to block messages failing SPF and DKIM alignment."
+      }
+    ]
+  },
+  {
+    "slug": "lab-17-multi-engine-visual-pivot",
+    "moduleId": "mod-17",
+    "stage": "A",
+    "title": "Lab 17: Multi-Engine Reverse Image & Object-Crop Methodology",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Compare TinEye ('Sort by Oldest') vs Google Lens / Yandex region-cropping on public Wikimedia Commons architectural photos.",
+    "prerequisites": ["Module 16"],
+    "steps": [
+      "Select a public-domain landmark photo from Wikimedia Commons where foreground pedestrians or text overlays partially obscure a building.",
+      "Run the full uncropped image in TinEye and sort by 'Oldest' to locate earliest indexed web appearances.",
+      "Crop tightly around ONLY the permanent architectural roofline/tower (excluding foreground noise) and compare landmark recognition results."
+    ],
+    "expectedOutcome": "Comparison note documenting when to use exact-match fingerprinting (TinEye) vs semantic architectural cropping.",
+    "selfCheck": [
+      {
+        "id": "l17-q1",
+        "prompt": "Which reverse image search engine lets you sort matches by 'Oldest' crawl date to find earliest publication?",
+        "acceptedAnswers": ["tineye", "tineye.com"],
+        "hint": "Starts with Tin...",
+        "explanation": "TinEye indexes exact/near-exact image fingerprints and lets analysts sort by Oldest crawl date."
+      },
+      {
+        "id": "l17-q2",
+        "prompt": "When reverse-searching a video clip, what extracted still images provide the sharpest visual search input?",
+        "acceptedAnswers": ["keyframes", "keyframe", "i-frames"],
+        "hint": "Extracted by tools like InVID: ___frames.",
+        "explanation": "Keyframes (I-frames) store complete uncompressed spatial frame data rather than motion deltas."
+      }
+    ]
+  },
+  {
+    "slug": "lab-18-provenance-and-artifact-check",
+    "moduleId": "mod-18",
+    "stage": "A",
+    "title": "Lab 18: Auditing Social Media EXIF Stripping & C2PA Provenance",
+    "durationMinutes": 25,
+    "difficulty": "Intermediate",
+    "objective": "Understand why most major social platforms strip EXIF GPS tags on upload and how C2PA Content Credentials work.",
+    "prerequisites": ["Module 17"],
+    "steps": [
+      "Take a harmless photo of a desk mug on your own device and inspect its raw EXIF fields locally using ExifTool or CyberChef.",
+      "Compare those tags against an image downloaded from a major social network—observing stripped camera/GPS tags and re-encoded JPEG quantization tables.",
+      "Visit `https://contentcredentials.org/verify` to inspect a sample C2PA-signed photograph and examine its cryptographic manifest tree."
+    ],
+    "expectedOutcome": "Verification checklist preventing false 'no EXIF = fake' conclusions while checking C2PA and visual consistency.",
+    "selfCheck": [
+      {
+        "id": "l18-q1",
+        "prompt": "Does the absence of EXIF metadata on a social media image prove the image was manipulated? (Answer yes or no)",
+        "acceptedAnswers": ["no"],
+        "hint": "Almost all social networks strip EXIF automatically for privacy and compression.",
+        "explanation": "No—platforms routinely strip EXIF metadata during upload recompression."
+      },
+      {
+        "id": "l18-q2",
+        "prompt": "What four-character coalition standard (`C___`) embeds cryptographically signed Content Credentials in media?",
+        "acceptedAnswers": ["c2pa"],
+        "hint": "Starts with C2...",
+        "explanation": "C2PA (Coalition for Content Provenance and Authenticity) defines signed provenance manifests."
+      }
+    ]
+  },
+  {
+    "slug": "lab-19-overpass-turbo-landmark-query",
+    "moduleId": "mod-19",
+    "stage": "A",
+    "title": "Lab 19: Geospatial Feature Mining with OpenStreetMap Overpass Turbo",
+    "durationMinutes": 35,
+    "difficulty": "Intermediate",
+    "objective": "Write an Overpass QL spatial proximity query to pinpoint an intersection from visual clues (e.g., a lighthouse within 300m of a railway).",
+    "prerequisites": ["Module 18"],
+    "steps": [
+      "Suppose a public postcard shows a lighthouse (`man_made=lighthouse`) standing within 250 meters of a railway track (`railway=rail`) inside a coastal region.",
+      "Open `https://overpass-turbo.eu`, zoom to a sample coastal area, and build a query finding `node[\"man_made\"=\"lighthouse\"]` and `way[\"railway\"=\"rail\"](around:250)`.",
+      "Inspect the candidate pins on satellite view (`earth.google.com`) to verify roofline geometry and road angle."
+    ],
+    "expectedOutcome": "Working Overpass QL snippet narrowing thousands of square kilometers down to a handful of verifiable coordinates.",
+    "selfCheck": [
+      {
+        "id": "l19-q1",
+        "prompt": "Which Overpass QL filter (`(______:250)`) finds features within a specified radius in meters of another set?",
+        "acceptedAnswers": ["around", "around:250"],
+        "hint": "Six-letter preposition meaning surrounding/near.",
+        "explanation": "The `(around:<meters>)` spatial filter in Overpass QL intersects nearby OSM features."
+      },
+      {
+        "id": "l19-q2",
+        "prompt": "Which collaborative open-data map project provides the underlying database queried by Overpass Turbo?",
+        "acceptedAnswers": ["openstreetmap", "osm"],
+        "hint": "OpenStreet...",
+        "explanation": "Overpass Turbo queries the crowdsourced OpenStreetMap (OSM) global vector database."
+      }
+    ]
+  },
+  {
+    "slug": "lab-20-suncalc-shadow-chronolocation",
+    "moduleId": "mod-20",
+    "stage": "A",
+    "title": "Lab 20: Solar Azimuth Chronolocation & Stage A Capstone Prep",
+    "durationMinutes": 35,
+    "difficulty": "Intermediate",
+    "objective": "Use `SunCalc.org` to calculate exact local capture time from shadow bearing and build a UTC-normalized timeline.",
+    "prerequisites": ["Module 19"],
+    "steps": [
+      "Pick a known landmark coordinate—for example, the Greenwich Royal Observatory (`51.4769, -0.0005`) on `2026-06-21`.",
+      "Suppose a vertical flagpole casts a shadow pointing directly due East (compass azimuth `90°`), meaning the sun is due West (`270°`).",
+      "Open `https://www.suncalc.org/#/51.4769,-0.0005,17/2026.06.21/12:00/1/3` and drag the time slider until the solar azimuth reads `270°`.",
+      "Record both the local British Summer Time (BST) and normalized UTC timestamp."
+    ],
+    "expectedOutcome": "Verified chronolocation calculation converting shadow direction -> solar azimuth -> exact UTC capture window.",
+    "selfCheck": [
+      {
+        "id": "l20-q1",
+        "prompt": "If an object casts a shadow pointing at 90° (due East), what is the sun's compass azimuth in degrees?",
+        "acceptedAnswers": ["270", "270°", "270 degrees"],
+        "hint": "Add 180 degrees to the shadow's bearing.",
+        "explanation": "Shadows always fall 180° opposite the light source: 90° + 180° = 270° (due West)."
+      },
+      {
+        "id": "l20-q2",
+        "prompt": "Which three-letter global time standard must professional OSINT timelines normalize timestamps to?",
+        "acceptedAnswers": ["utc", "coordinated universal time"],
+        "hint": "Coordinated Universal Time.",
+        "explanation": "UTC eliminates daylight-saving and multi-timezone ambiguity across global investigations."
+      }
+    ]
+  },
+  {
+    "slug": "lab-21-diamond-model-pivot",
+    "moduleId": "mod-21",
+    "stage": "B",
+    "title": "Lab 21: Mapping an Intrusion Advisory to the Diamond Model & Pyramid of Pain",
+    "durationMinutes": 30,
+    "difficulty": "Advanced",
+    "objective": "Extract IOCs and TTPs from a public CISA cybersecurity advisory and map them onto the four Diamond Model vertices.",
+    "prerequisites": ["Stage A Certificate", "Module 20"],
+    "steps": [
+      "Read a public CISA advisory snippet describing a spear-phishing campaign using a typosquatted domain (`login-portal-update[.]example`), a known malware SHA-256 hash, and PowerShell scheduled-task persistence.",
+      "Classify each artifact on David Bianco's Pyramid of Pain (Hash -> IP -> Domain -> Network/Host Artifacts -> Tools -> TTPs).",
+      "Populate the four Diamond Model vertices: Adversary, Infrastructure, Capability, and Victim."
+    ],
+    "expectedOutcome": "Structured Diamond Model graph and Pyramid of Pain prioritization table.",
+    "selfCheck": [
+      {
+        "id": "l21-q1",
+        "prompt": "Which layer sits at the VERY TOP of David Bianco's Pyramid of Pain as the hardest for attackers to change?",
+        "acceptedAnswers": ["ttps", "ttp", "tactics techniques and procedures", "tactics, techniques, and procedures"],
+        "hint": "Three-letter plural acronym: Tactics, Techniques, and Procedures.",
+        "explanation": "TTPs (adversary behaviors) sit at the apex of the Pyramid of Pain; hashes sit at the bottom."
+      },
+      {
+        "id": "l21-q2",
+        "prompt": "In the Diamond Model, domains, C2 IPs, and TLS certificates belong to which vertex?",
+        "acceptedAnswers": ["infrastructure"],
+        "hint": "Starts with Infra...",
+        "explanation": "The Infrastructure vertex holds network delivery and C2 assets—primary OSINT pivot territory."
+      }
+    ]
+  },
+  {
+    "slug": "lab-22-mitre-ta0043-mapping",
+    "moduleId": "mod-22",
+    "stage": "B",
+    "title": "Lab 22: Defensive Exposure Audit Mapped to MITRE ATT&CK TA0043",
+    "durationMinutes": 30,
+    "difficulty": "Advanced",
+    "objective": "Map passive OSINT findings (CT logs, PDF author leaks, job-post stack disclosures) to MITRE ATT&CK Reconnaissance technique IDs.",
+    "prerequisites": ["Module 21"],
+    "steps": [
+      "Open `https://attack.mitre.org/tactics/TA0043/`.",
+      "Match three findings to exact sub-techniques: (1) Harvesting subdomains from CT logs -> `T1596.003` (Search Open Technical Databases: Digital Certificates); (2) Inferring SIEM vendor from public job postings -> `T1591` / `T1592`; (3) Extracting employee emails from public PDFs -> `T1589.002`.",
+      "Write one defensive mitigation (e.g., Pre-compromise OPSEC / metadata scrubbing) for each technique."
+    ],
+    "expectedOutcome": "MITRE ATT&CK Navigator-ready technique mapping table with defensive mitigations.",
+    "selfCheck": [
+      {
+        "id": "l22-q1",
+        "prompt": "What is the official MITRE ATT&CK Tactic ID (`TA____`) for Reconnaissance?",
+        "acceptedAnswers": ["ta0043"],
+        "hint": "TA00 followed by 43.",
+        "explanation": "TA0043 is the MITRE ATT&CK Enterprise tactic identifier for Reconnaissance."
+      },
+      {
+        "id": "l22-q2",
+        "prompt": "Under T1596 (Search Open Technical Databases), does querying Certificate Transparency logs map to `T1596.003` Digital Certificates? (Answer yes or no)",
+        "acceptedAnswers": ["yes"],
+        "hint": "Check sub-techniques of T1596.",
+        "explanation": "Yes—T1596.003 specifically covers adversary and defender lookups of public digital certificate logs."
+      }
+    ]
+  },
+  {
+    "slug": "lab-23-tlp-stix-and-defanging",
+    "moduleId": "mod-23",
+    "stage": "B",
+    "title": "Lab 23: Defanging IOCs & Packaging STIX 2.1 Indicators Under TLP 2.0",
+    "durationMinutes": 30,
+    "difficulty": "Advanced",
+    "objective": "Safely defang live-formatted malicious indicators in CyberChef and assign proper FIRST TLP 2.0 sharing labels.",
+    "prerequisites": ["Module 22"],
+    "steps": [
+      "Take sample indicator `https://auth-verify.bad-example.org/login` and apply CyberChef's 'Defang URL' recipe (`hxxps://auth-verify[.]bad-example[.]org/login`).",
+      "Review FIRST TLP 2.0 designations (`TLP:RED`, `TLP:AMBER+STRICT`, `TLP:AMBER`, `TLP:GREEN`, `TLP:CLEAR`).",
+      "Inspect a JSON STIX 2.1 `indicator` object containing `pattern: \"[domain-name:value = 'auth-verify.bad-example.org']\"`."
+    ],
+    "expectedOutcome": "Sanitized defanged IOC table with valid STIX 2.1 pattern syntax and TLP 2.0 sharing header.",
+    "selfCheck": [
+      {
+        "id": "l23-q1",
+        "prompt": "When defanging an `https://` URL, what five-letter string replaces `https`?",
+        "acceptedAnswers": ["hxxps", "hxxps://"],
+        "hint": "Replace the two 't' letters with 'x'.",
+        "explanation": "`hxxps` prevents chat clients, ticketing tools, and email readers from auto-linking malicious URLs."
+      },
+      {
+        "id": "l23-q2",
+        "prompt": "In FIRST TLP 2.0, which designation replaced legacy `TLP:WHITE` for unrestricted public sharing (`TLP:_____`)?",
+        "acceptedAnswers": ["clear", "tlp:clear"],
+        "hint": "Five-letter word meaning transparent/unrestricted.",
+        "explanation": "TLP 2.0 replaced TLP:WHITE with TLP:CLEAR for publicly shareable intelligence."
+      }
+    ]
+  },
+  {
+    "slug": "lab-24-siem-alert-osint-enrichment",
+    "moduleId": "mod-24",
+    "stage": "B",
+    "title": "Lab 24: SOC L1 Alert Triage & External OSINT Enrichment",
+    "durationMinutes": 35,
+    "difficulty": "Advanced",
+    "objective": "Triage three synthetic SIEM firewall/proxy alerts by enriching external IPs and domains with GreyNoise, RDAP age, and ASN context.",
+    "prerequisites": ["Module 23"],
+    "steps": [
+      "Inspect Alert A: Inbound TCP/443 scan from a documented Censys scanner subnet -> Verify benign `RIOT`/scanner tag in GreyNoise -> Close as benign background scan.",
+      "Inspect Alert B: Outbound DNS/HTTPS connection from workstation `WS-042` to a domain registered 18 hours ago on a high-abuse bullet-proof ASN.",
+      "Write a concise SOC L1 escalation note for Alert B citing domain age (<24h), ASN context, and passive DNS lack of prior history."
+    ],
+    "expectedOutcome": "Completed SOC L1 triage ticket separating false positives from newly registered C2 communication.",
+    "selfCheck": [
+      {
+        "id": "l24-q1",
+        "prompt": "Is a domain registered less than 24 hours ago (Newly Registered Domain / NRD) generally higher or lower risk in outbound enterprise proxy logs?",
+        "acceptedAnswers": ["higher", "high", "higher risk"],
+        "hint": "Phishing and C2 domains are frequently spun up hours before use.",
+        "explanation": "Newly Registered Domains (NRDs) carry significantly elevated phishing and C2 risk in corporate proxy traffic."
+      },
+      {
+        "id": "l24-q2",
+        "prompt": "Which OSINT tool specializes in identifying mass internet background scanners to reduce SOC alert fatigue?",
+        "acceptedAnswers": ["greynoise", "greynoise.io"],
+        "hint": "Grey...",
+        "explanation": "GreyNoise classifies mass internet-wide scanner traffic vs targeted attacks."
+      }
+    ]
+  },
+  {
+    "slug": "lab-25-phishing-infrastructure-trace",
+    "moduleId": "mod-25",
+    "stage": "B",
+    "title": "Lab 25: Pivoting Across Phishing Infrastructure Using Passive urlscan.io Data",
+    "durationMinutes": 35,
+    "difficulty": "Advanced",
+    "objective": "Use existing `urlscan.io` search queries (`page.domain:`, `hash:`, `cert.issuer:`) to pivot from one phishing URL to sibling domains safely.",
+    "prerequisites": ["Module 24"],
+    "steps": [
+      "Open `https://urlscan.io/search/` (passive search interface—do NOT submit internal corporate URLs!).",
+      "Examine how `urlscan.io` indexes SHA-256 hashes of loaded logos, CSS files, and JavaScript bundles (`hash:<sha256>`).",
+      "Trace how reusing a single login-form JavaScript file allows defenders to find 20 newly deployed phishing domains across completely different TLDs."
+    ],
+    "expectedOutcome": "Infrastructure pivot diagram showing Domain 1 -> Shared JS SHA-256 Hash -> Domains 2..N.",
+    "selfCheck": [
+      {
+        "id": "l25-q1",
+        "prompt": "In urlscan.io search syntax, which prefix (`____:<sha256>`) finds all scanned pages loading an identical resource file?",
+        "acceptedAnswers": ["hash", "hash:"],
+        "hint": "Four-letter cryptographic digest term.",
+        "explanation": "Searching `hash:<sha256>` on urlscan.io pivots across every archived page serving that exact image, CSS, or script."
+      },
+      {
+        "id": "l25-q2",
+        "prompt": "Should a SOC analyst submit a confidential internal password-reset link containing a live user token to a public urlscan.io scan? (Answer yes or no)",
+        "acceptedAnswers": ["no"],
+        "hint": "Public scans are visible to everyone on the internet!",
+        "explanation": "Never—public sandbox submissions publish screenshots, URLs, and DOM tokens to the public feed."
+      }
+    ]
+  },
+  {
+    "slug": "lab-26-cve-kev-epss-prioritization",
+    "moduleId": "mod-26",
+    "stage": "B",
+    "title": "Lab 26: Risk-Based Vulnerability Triage with CVSS, EPSS & CISA KEV",
+    "durationMinutes": 30,
+    "difficulty": "Advanced",
+    "objective": "Prioritize three vulnerabilities by combining passive internet exposure with CVSS, EPSS probability, and CISA KEV active-exploitation status.",
+    "prerequisites": ["Module 25"],
+    "steps": [
+      "Compare Vuln 1 (CVSS 9.8 on an offline internal test printer, EPSS 0.002, NOT in CISA KEV) vs Vuln 2 (CVSS 7.5 on an internet-facing VPN gateway visible in passive Censys records, EPSS 0.94, LISTED in CISA KEV).",
+      "Verify CISA KEV catalog fields (`cveID`, `vendorProject`, `dateAdded`, `dueDate`, `knownRansomwareCampaignUse`).",
+      "Justify why Vuln 2 receives emergency P1 remediation ahead of Vuln 1."
+    ],
+    "expectedOutcome": "Evidence-based remediation matrix outperforming naive CVSS-only sorting.",
+    "selfCheck": [
+      {
+        "id": "l26-q1",
+        "prompt": "Which U.S. agency maintains the authoritative Known Exploited Vulnerabilities (KEV) catalog?",
+        "acceptedAnswers": ["cisa"],
+        "hint": "Four-letter agency acronym starting with C.",
+        "explanation": "CISA maintains the Known Exploited Vulnerabilities (KEV) catalog."
+      },
+      {
+        "id": "l26-q2",
+        "prompt": "Which scoring system (`____`) estimates the 30-day probability (0 to 1) that a CVE will be exploited in the wild?",
+        "acceptedAnswers": ["epss", "exploit prediction scoring system"],
+        "hint": "Four-letter acronym starting with EP...",
+        "explanation": "EPSS (Exploit Prediction Scoring System, maintained by FIRST) predicts real-world exploitation likelihood."
+      }
+    ]
+  },
+  {
+    "slug": "lab-27-corporate-lei-filings-map",
+    "moduleId": "mod-27",
+    "stage": "B",
+    "title": "Lab 27: Corporate Hierarchy & Sanctions Due Diligence via GLEIF & EDGAR",
+    "durationMinutes": 35,
+    "difficulty": "Advanced",
+    "objective": "Trace corporate parent-subsidiary trees using 20-character ISO 17442 LEI records and SEC EDGAR Exhibit 21 subsidiary filings.",
+    "prerequisites": ["Module 26"],
+    "steps": [
+      "Open `https://search.gleif.org` and look up any major public multinational corporation.",
+      "Inspect 'Level 1 Data' (Who is who: legal name, registered address, registration authority ID) and 'Level 2 Data' (Who owns whom: direct and ultimate parent relationships).",
+      "Locate Exhibit 21 (`EX-21`) inside an annual `10-K` filing on SEC EDGAR (`sec.gov/edgar`) to see disclosed global subsidiaries."
+    ],
+    "expectedOutcome": "Verified corporate ownership chart backed by GLEIF LEI codes and SEC Form 10-K Exhibit 21 citations.",
+    "selfCheck": [
+      {
+        "id": "l27-q1",
+        "prompt": "How many alphanumeric characters make up a standard ISO 17442 Legal Entity Identifier (LEI)?",
+        "acceptedAnswers": ["20", "twenty"],
+        "hint": "Two-digit round number.",
+        "explanation": "Every ISO 17442 LEI is an exact 20-character alphanumeric identifier."
+      },
+      {
+        "id": "l27-q2",
+        "prompt": "Which annual SEC filing form (`__-_`) contains audited financials, risk factors, and Exhibit 21 subsidiary lists for U.S. public companies?",
+        "acceptedAnswers": ["10-k", "form 10-k", "10k"],
+        "hint": "Number 10 followed by a hyphen and a letter.",
+        "explanation": "SEC Form 10-K is the comprehensive annual corporate disclosure filing."
+      }
+    ]
+  },
+  {
+    "slug": "lab-28-corroboration-and-attribution",
+    "moduleId": "mod-28",
+    "stage": "B",
+    "title": "Lab 28: Detecting Circular Reporting & Applying Two-Source Corroboration",
+    "durationMinutes": 25,
+    "difficulty": "Advanced",
+    "objective": "Audit a multi-article claim chain to detect circular reporting ('citogenesis') where three blogs cite the same unverified social post.",
+    "prerequisites": ["Module 27"],
+    "steps": [
+      "Trace timestamps and hyperlinks across three news summaries claiming a corporate executive resigned.",
+      "Discover all three summaries trace back to a single 4-hour-old parody account handle with one swapped character (`homoglyph`).",
+      "Check official statutory officer filings and verified investor relations releases to refute the false claim safely without amplifying personal data."
+    ],
+    "expectedOutcome": "Source provenance tree exposing single-origin circular reporting.",
+    "selfCheck": [
+      {
+        "id": "l28-q1",
+        "prompt": "What flaw occurs when multiple secondary outlets cite the same single unverified source, creating an illusion of independent confirmation?",
+        "acceptedAnswers": ["circular reporting", "citogenesis"],
+        "hint": "________ reporting.",
+        "explanation": "Circular reporting masquerades one unverified claim as multi-source corroboration."
+      },
+      {
+        "id": "l28-q2",
+        "prompt": "How many genuinely independent primary sources are the baseline minimum for corroborating high-stakes claims?",
+        "acceptedAnswers": ["2", "two"],
+        "hint": "Two-source rule.",
+        "explanation": "At least two genuinely independent sources are required to establish baseline corroboration."
+      }
+    ]
+  },
+  {
+    "slug": "lab-29-surface-deep-dark-classification",
+    "moduleId": "mod-29",
+    "stage": "B",
+    "title": "Lab 29: Conceptual Architecture of Surface, Deep, and Dark Web Telemetry",
+    "durationMinutes": 25,
+    "difficulty": "Advanced",
+    "objective": "Accurately classify web layers conceptually and evaluate safe clearnet CTI alternatives for monitoring ransomware/breach disclosures.",
+    "prerequisites": ["Module 28"],
+    "steps": [
+      "Classify five examples into Surface Web, Deep Web, or Dark Web: (1) Public Wikipedia article, (2) Your private hospital patient portal over HTTPS, (3) Unlisted company intranet database, (4) Tor `.onion` hidden service mirror of a major newspaper (e.g., BBC/NYT onion mirror), (5) Public ICANN RDAP.",
+      "Review why corporate SOCs rely on vetted clearnet CTI feeds, MISP communities, and legal counsel rather than ad-hoc analyst browsing of criminal forums."
+    ],
+    "expectedOutcome": "Conceptual classification table and enterprise legal safety policy for dark-web-related threat intelligence.",
+    "selfCheck": [
+      {
+        "id": "l29-q1",
+        "prompt": "Is a password-protected university library or online banking portal on standard HTTPS part of the Deep Web or the Dark Web?",
+        "acceptedAnswers": ["deep web", "deep"],
+        "hint": "Unindexed standard web behind login = ____ Web.",
+        "explanation": "The Deep Web encompasses all unindexed/authenticated standard web pages; the Dark Web specifically requires overlay networks."
+      },
+      {
+        "id": "l29-q2",
+        "prompt": "What top-level special-use domain suffix (RFC 7686) designates Tor hidden services (`._____`)?",
+        "acceptedAnswers": [".onion", "onion"],
+        "hint": "Named after onion routing.",
+        "explanation": "RFC 7686 reserves `.onion` for anonymous onion-routed hidden services."
+      }
+    ]
+  },
+  {
+    "slug": "lab-30-admiralty-and-ach-report",
+    "moduleId": "mod-30",
+    "stage": "B",
+    "title": "Lab 30: Writing an Admiralty-Graded BLUF Intelligence Report",
+    "durationMinutes": 40,
+    "difficulty": "Advanced",
+    "objective": "Synthesize multi-source OSINT findings into an executive BLUF brief with Admiralty source ratings, confidence levels, and ACH matrix.",
+    "prerequisites": ["Module 29"],
+    "steps": [
+      "Assign Admiralty grades (`A1` through `F6`) to three pieces of evidence: (1) Official ICANN RDAP / CT log cryptographic record (`A1`), (2) Reputable CERT bulletin citing probable campaign link (`B2`), (3) Unverified paste-site claim with no technical corroboration (`F6`).",
+      "Draft a 4-sentence Bottom Line Up Front (BLUF) paragraph stating Key Judgment, Confidence Level (High/Moderate/Low), and Evidence Basis.",
+      "Export your report to Markdown or Google Docs for portfolio review."
+    ],
+    "expectedOutcome": "Portfolio-grade Threat Intelligence Report ready for Stage B Final Certification.",
+    "selfCheck": [
+      {
+        "id": "l30-q1",
+        "prompt": "In the Admiralty Code, what two-character grade represents a Completely Reliable source (`A`) with Confirmed information (`1`)?",
+        "acceptedAnswers": ["a1", "a-1"],
+        "hint": "Combine letter A and digit 1.",
+        "explanation": "A1 is the highest Admiralty rating: Completely reliable source + Independently confirmed information."
+      },
+      {
+        "id": "l30-q2",
+        "prompt": "What four-letter acronym stands for placing your core conclusion in the very first paragraph of an intelligence report?",
+        "acceptedAnswers": ["bluf", "bottom line up front"],
+        "hint": "Bottom Line Up Front.",
+        "explanation": "BLUF (Bottom Line Up Front) ensures busy decision-makers grasp the key judgment and confidence immediately."
+      }
+    ]
+  }
+]

@@ -1,0 +1,444 @@
+{
+  "stages": [
+    {
+      "id": "stage-a",
+      "code": "A",
+      "slug": "stage-a",
+      "title": "STAGE A — Passive OSINT Framework",
+      "subtitle": "Certificate Level · Zero Active Probing · Safe & Legal Reconnaissance",
+      "certificateTitle": "Passive OSINT Certificate",
+      "lockedByDefault": false,
+      "summary": "Master foundational passive Open Source Intelligence. Collect, verify, and correlate publicly available information across search engines, archives, DNS/certificate registries, social platforms, and geospatial imagery without ever touching or alerting a target system.",
+      "outcomes": [
+        "Explain and execute the passive OSINT cycle on authorized public targets.",
+        "Operate 10+ industry-standard passive OSINT tools independently and safely.",
+        "Map public infrastructure passively (domain -> passive subdomains -> CT logs -> IPs).",
+        "Verify digital images and public claims using reverse image search and metadata.",
+        "Maintain strict analyst OPSEC and adhere to legal and ethical boundaries.",
+        "Produce a structured passive OSINT investigation report with verifiable citations."
+      ],
+      "phases": [
+        {
+          "id": "phase-1",
+          "number": 1,
+          "slug": "phase-1-foundations",
+          "title": "Phase 1 — Foundations",
+          "summary": "Core intelligence concepts, the strict passive boundary, analyst OPSEC, and legal ethics.",
+          "modules": [
+            {
+              "id": "mod-01",
+              "number": 1,
+              "slug": "mod-01-what-is-osint",
+              "title": "Module 1: What is OSINT",
+              "summary": "OSINT vs HUMINT/SIGINT/IMINT, open data sources, and the five-step intelligence cycle.",
+              "careerRelevance": ["Junior OSINT Researcher", "Fact-Checker", "Due Diligence Analyst", "SOC Analyst L1"],
+              "prerequisites": [],
+              "labSlug": "lab-01-osint-cycle-mapping",
+              "topicSlugs": ["osint-disciplines-overview", "intelligence-cycle-basics"]
+            },
+            {
+              "id": "mod-02",
+              "number": 2,
+              "slug": "mod-02-passive-vs-active",
+              "title": "Module 2: Passive vs Active Recon",
+              "summary": "Understanding zero-touch collection, third-party intermediaries, authorization, and Rules of Engagement.",
+              "careerRelevance": ["SOC Analyst L1", "Threat Intel Analyst", "Penetration Testing Support", "Compliance Researcher"],
+              "prerequisites": ["mod-01"],
+              "labSlug": "lab-02-passive-boundary-audit",
+              "topicSlugs": ["passive-active-boundary", "authorization-and-roe"]
+            },
+            {
+              "id": "mod-03",
+              "number": 3,
+              "slug": "mod-03-opsec-fundamentals",
+              "title": "Module 3: OPSEC Fundamentals",
+              "summary": "Browser compartmentalization, VM isolation, VPN threat models, research accounts, and metadata hygiene.",
+              "careerRelevance": ["Threat Intel Analyst", "Investigative Journalist", "Fraud Analyst", "Brand Protection Analyst"],
+              "prerequisites": ["mod-02"],
+              "labSlug": "lab-03-browser-isolation-check",
+              "topicSlugs": ["browser-compartmentalization", "research-personas-and-hygiene"]
+            },
+            {
+              "id": "mod-04",
+              "number": 4,
+              "slug": "mod-04-legal-ethical-boundaries",
+              "title": "Module 4: Legal & Ethical Boundaries",
+              "summary": "Data protection laws (GDPR/CCPA concepts), Terms of Service, consent, proportionality, and 'hunt patterns not people'.",
+              "careerRelevance": ["Trust & Safety Specialist", "Corporate Investigator", "Journalist", "Cyber Threat Analyst"],
+              "prerequisites": ["mod-03"],
+              "labSlug": "lab-04-ethical-scoping-review",
+              "topicSlugs": ["jurisdiction-and-privacy-laws", "ethical-investigation-principles"]
+            }
+          ]
+        },
+        {
+          "id": "phase-2",
+          "number": 2,
+          "slug": "phase-2-technical-basics",
+          "title": "Phase 2 — Technical Basics for Passive OSINT",
+          "summary": "Conceptual networking, search indexing mechanics, file metadata/hashes, and essential Linux CLI utilities.",
+          "modules": [
+            {
+              "id": "mod-05",
+              "number": 5,
+              "slug": "mod-05-how-internet-works",
+              "title": "Module 5: How the Internet Works",
+              "summary": "Conceptual walkthrough of IPv4/IPv6, ASN routing, DNS record types (A, AAAA, MX, TXT, NS, CNAME), HTTP headers, and TLS.",
+              "careerRelevance": ["SOC Analyst L1", "Network Defense Analyst", "Threat Intel Analyst"],
+              "prerequisites": ["mod-04"],
+              "labSlug": "lab-05-dns-records-analysis",
+              "topicSlugs": ["dns-and-ip-fundamentals", "http-and-tls-concepts"]
+            },
+            {
+              "id": "mod-06",
+              "number": 6,
+              "slug": "mod-06-browser-search-mechanics",
+              "title": "Module 6: Browser & Search Engine Mechanics",
+              "summary": "Web crawlers, robots.txt, sitemaps, indexing pipelines, DOM inspection, and cached snapshots.",
+              "careerRelevance": ["OSINT Researcher", "Digital Marketing Auditor", "Web Security Analyst"],
+              "prerequisites": ["mod-05"],
+              "labSlug": "lab-06-robots-and-sitemap-inspection",
+              "topicSlugs": ["crawlers-robots-and-indexing", "browser-devtools-passive-reading"]
+            },
+            {
+              "id": "mod-07",
+              "number": 7,
+              "slug": "mod-07-data-types-metadata",
+              "title": "Module 7: Data Types & Metadata",
+              "summary": "File signatures (magic bytes), cryptographic hashes (MD5, SHA-256), EXIF/XMP tags, PDF metadata, and UTC timestamps.",
+              "careerRelevance": ["Digital Forensics Junior", "SOC Analyst L1", "Media Verification Specialist"],
+              "prerequisites": ["mod-06"],
+              "labSlug": "lab-07-magic-bytes-and-hashing",
+              "topicSlugs": ["magic-bytes-and-file-hashes", "document-and-exif-metadata"]
+            },
+            {
+              "id": "mod-08",
+              "number": 8,
+              "slug": "mod-08-linux-cli-basics",
+              "title": "Module 8: Linux Command Line Basics",
+              "summary": "Using grep, awk, sort, uniq, curl, whois, dig, file, and sha256sum cleanly for local OSINT text processing.",
+              "careerRelevance": ["SOC Analyst L1", "Threat Intel Engineer", "Cyber Investigation Support"],
+              "prerequisites": ["mod-07"],
+              "labSlug": "lab-08-cli-text-pivoting",
+              "topicSlugs": ["cli-text-filtering-grep-sort", "cli-network-lookups-whois-dig"]
+            }
+          ]
+        },
+        {
+          "id": "phase-3",
+          "number": 3,
+          "slug": "phase-3-search-public-records",
+          "title": "Phase 3 — Search & Public Records",
+          "summary": "Precision search operators across global engines, historical web archives, public registries, and CT logs.",
+          "modules": [
+            {
+              "id": "mod-09",
+              "number": 9,
+              "slug": "mod-09-search-operators-dorking",
+              "title": "Module 9: Search Operators & Dorking",
+              "summary": "Boolean logic and precision operators (site:, filetype:, intitle:, inurl:) across Google, Bing, DuckDuckGo, and Yandex.",
+              "careerRelevance": ["OSINT Analyst", "Investigative Journalist", "Exposure Management Analyst"],
+              "prerequisites": ["mod-08"],
+              "labSlug": "lab-09-precision-search-queries",
+              "topicSlugs": ["google-and-bing-operators", "multi-engine-search-strategy"]
+            },
+            {
+              "id": "mod-10",
+              "number": 10,
+              "slug": "mod-10-web-archives-cached-data",
+              "title": "Module 10: Web Archives & Cached Data",
+              "summary": "Recovering historical web pages and CDX API timelines via the Internet Archive Wayback Machine and archive.today.",
+              "careerRelevance": ["Investigative Journalist", "Legal Researcher", "Threat Intel Analyst"],
+              "prerequisites": ["mod-09"],
+              "labSlug": "lab-10-wayback-cdx-timeline",
+              "topicSlugs": ["wayback-machine-methodology", "archive-snapshots-and-preservation"]
+            },
+            {
+              "id": "mod-11",
+              "number": 11,
+              "slug": "mod-11-public-records-registries",
+              "title": "Module 11: Public Records & Registries",
+              "summary": "ICANN RDAP/WHOIS lookups, regional internet registries (ARIN, RIPE, APNIC), patent/trademark filings, and public gazettes.",
+              "careerRelevance": ["Due Diligence Analyst", "Fraud Investigator", "Brand Protection Specialist"],
+              "prerequisites": ["mod-10"],
+              "labSlug": "lab-11-rdap-and-rir-allocation",
+              "topicSlugs": ["rdap-whois-and-rir-lookups", "public-filings-and-registries"]
+            },
+            {
+              "id": "mod-12",
+              "number": 12,
+              "slug": "mod-12-certificate-transparency",
+              "title": "Module 12: Certificate Transparency Logs",
+              "summary": "How TLS Certificate Authorities publish append-only CT logs and how to discover subdomains passively via crt.sh.",
+              "careerRelevance": ["SOC Analyst L1", "Attack Surface Analyst", "Threat Intel Analyst"],
+              "prerequisites": ["mod-11"],
+              "labSlug": "lab-12-crtsh-passive-discovery",
+              "topicSlugs": ["how-ct-logs-work", "passive-subdomain-pivoting-crtsh"]
+            }
+          ]
+        },
+        {
+          "id": "phase-4",
+          "number": 4,
+          "slug": "phase-4-passive-infra-social",
+          "title": "Phase 4 — Passive Infrastructure & Social Recon",
+          "summary": "Zero-touch infrastructure correlation, internet-wide scan index reading, public profile pivoting, and breach hygiene.",
+          "modules": [
+            {
+              "id": "mod-13",
+              "number": 13,
+              "slug": "mod-13-passive-dns-subdomains",
+              "title": "Module 13: Passive DNS & Subdomain Enumeration",
+              "summary": "Historical DNS resolution sensors, passive subdomain aggregators, ASN mapping, and strictly avoiding DNS brute-forcing.",
+              "careerRelevance": ["Threat Intel Analyst", "SOC Analyst L1", "External Attack Surface Analyst"],
+              "prerequisites": ["mod-12"],
+              "labSlug": "lab-13-passive-dns-correlation",
+              "topicSlugs": ["passive-dns-architecture", "asn-and-shared-hosting-pivots"]
+            },
+            {
+              "id": "mod-14",
+              "number": 14,
+              "slug": "mod-14-shodan-censys-basics",
+              "title": "Module 14: Shodan/Censys/FOFA Basics",
+              "summary": "Querying pre-indexed internet banner repositories (Shodan, Censys) safely without launching any packets at targets.",
+              "careerRelevance": ["Vulnerability Context Analyst", "SOC Analyst L1", "Threat Hunter"],
+              "prerequisites": ["mod-13"],
+              "labSlug": "lab-14-banner-index-filters",
+              "topicSlugs": ["internet-scan-repositories", "banner-certificates-and-favicon-hashes"]
+            },
+            {
+              "id": "mod-15",
+              "number": 15,
+              "slug": "mod-15-social-media-osint",
+              "title": "Module 15: Social Media OSINT (SOCMINT)",
+              "summary": "Username reuse correlation, public bio/handle pivoting, platform ID persistence, and verification against impersonators.",
+              "careerRelevance": ["Trust & Safety Analyst", "Investigative Journalist", "Fraud Analyst"],
+              "prerequisites": ["mod-14"],
+              "labSlug": "lab-15-username-handle-correlation",
+              "topicSlugs": ["username-enumeration-concepts", "cross-platform-profile-verification"]
+            },
+            {
+              "id": "mod-16",
+              "number": 16,
+              "slug": "mod-16-email-breach-concepts",
+              "title": "Module 16: Email & Breach Data Concepts",
+              "summary": "Corporate email naming conventions, MX/SPF/DMARC record reading, k-anonymity breach notification services (HIBP), and strict legal rules.",
+              "careerRelevance": ["SOC Analyst L1", "Identity Protection Analyst", "Fraud Prevention Specialist"],
+              "prerequisites": ["mod-15"],
+              "labSlug": "lab-16-spf-dmarc-and-hibp-concepts",
+              "topicSlugs": ["email-headers-spf-dmarc", "breach-metadata-and-ethics"]
+            }
+          ]
+        },
+        {
+          "id": "phase-5",
+          "number": 5,
+          "slug": "phase-5-visual-geo-osint",
+          "title": "Phase 5 — Visual & Geo Passive OSINT",
+          "summary": "Reverse image workflows, synthetic media detection, landmark geolocation, and solar chronolocation.",
+          "modules": [
+            {
+              "id": "mod-17",
+              "number": 17,
+              "slug": "mod-17-reverse-image-search",
+              "title": "Module 17: Reverse Image Search",
+              "summary": "Comparative strengths of Google Lens, Yandex Images, TinEye, and Bing Visual Search, plus keyframe cropping techniques.",
+              "careerRelevance": ["Fact-Checker", "Media Verification Journalist", "Disinformation Researcher"],
+              "prerequisites": ["mod-16"],
+              "labSlug": "lab-17-multi-engine-visual-pivot",
+              "topicSlugs": ["visual-search-engine-strengths", "cropping-and-keyframe-extraction"]
+            },
+            {
+              "id": "mod-18",
+              "number": 18,
+              "slug": "mod-18-image-verification-metadata",
+              "title": "Module 18: Image Verification & Metadata",
+              "summary": "Metadata stripping on social networks, Error Level Analysis caveats, AI/deepfake visual artifacts, and provenance standards (C2PA).",
+              "careerRelevance": ["Media Forensics Analyst", "Trust & Safety Specialist", "Newsroom Verification"],
+              "prerequisites": ["mod-17"],
+              "labSlug": "lab-18-provenance-and-artifact-check",
+              "topicSlugs": ["exif-stripping-and-forensic-limits", "synthetic-media-and-c2pa"]
+            },
+            {
+              "id": "mod-19",
+              "number": 19,
+              "slug": "mod-19-geolocation-basics",
+              "title": "Module 19: Geolocation Basics",
+              "summary": "Extracting road signage, utility poles, vegetation, terrain, and architectural clues using OpenStreetMap Overpass Turbo and satellite imagery.",
+              "careerRelevance": ["Geospatial OSINT Analyst", "Human Rights Researcher", "Investigative Journalist"],
+              "prerequisites": ["mod-18"],
+              "labSlug": "lab-19-overpass-turbo-landmark-query",
+              "topicSlugs": ["visual-clues-and-satellite-matching", "openstreetmap-and-overpass-queries"]
+            },
+            {
+              "id": "mod-20",
+              "number": 20,
+              "slug": "mod-20-chronolocation-timelines",
+              "title": "Module 20: Chronolocation & Timeline Building",
+              "summary": "Estimating capture time via shadow azimuth (SunCalc), historical weather archives, flight/maritime public tracks, and structured event timelines.",
+              "careerRelevance": ["Open Source Investigator", "Incident Timeline Analyst", "Investigative Journalist"],
+              "prerequisites": ["mod-19"],
+              "labSlug": "lab-20-suncalc-shadow-chronolocation",
+              "topicSlugs": ["shadow-azimuth-and-weather-verification", "structured-event-timeline-reconstruction"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stage-b",
+      "code": "B",
+      "slug": "stage-b",
+      "title": "STAGE B — Advanced Investigation (Threat Intel & SOC)",
+      "subtitle": "Locked Until Stage A Passive OSINT Certificate Earned",
+      "certificateTitle": "Advanced OSINT & Threat Intel Certificate",
+      "lockedByDefault": true,
+      "summary": "Apply certified passive OSINT Tradecraft to defensive cybersecurity operations: Cyber Threat Intelligence (CTI), MITRE ATT&CK reconnaissance mapping, SOC L1 alert enrichment, phishing infrastructure tracing, corporate due diligence, and Admiralty-graded analytic reporting.",
+      "outcomes": [
+        "Apply OSINT to Cyber Threat Intelligence (IOC handling, Pyramid of Pain, MITRE ATT&CK mapping).",
+        "Enrich SOC L1 alerts and incident response workflows with passive external context.",
+        "Conduct advanced corporate beneficial-ownership and ethical people investigations.",
+        "Produce decision-ready intelligence reports using Structured Analytic Techniques and Admiralty grading."
+      ],
+      "phases": [
+        {
+          "id": "phase-6",
+          "number": 6,
+          "slug": "phase-6-threat-intelligence",
+          "title": "Phase 6 — Threat Intelligence",
+          "summary": "Strategic, operational, and tactical CTI models, MITRE ATT&CK Recon mapping, and safe IOC handling.",
+          "modules": [
+            {
+              "id": "mod-21",
+              "number": 21,
+              "slug": "mod-21-cti-fundamentals",
+              "title": "Module 21: CTI Fundamentals",
+              "summary": "Indicators of Compromise (IOCs), Adversary TTPs, David Bianco's Pyramid of Pain, Diamond Model, and Cyber Kill Chain.",
+              "careerRelevance": ["Threat Intelligence Analyst", "SOC Analyst L1/L2", "Detection Engineer"],
+              "prerequisites": ["mod-20"],
+              "labSlug": "lab-21-diamond-model-pivot",
+              "topicSlugs": ["iocs-ttps-and-pyramid-of-pain", "diamond-model-and-kill-chain-cti"]
+            },
+            {
+              "id": "mod-22",
+              "number": 22,
+              "slug": "mod-22-mitre-attack-recon",
+              "title": "Module 22: MITRE ATT&CK Recon Mapping",
+              "summary": "Mapping adversary pre-compromise reconnaissance (TA0043: T1589-T1598) to defensive visibility and deception.",
+              "careerRelevance": ["Threat Intelligence Analyst", "Purple Team Analyst", "SOC Analyst L2"],
+              "prerequisites": ["mod-21"],
+              "labSlug": "lab-22-mitre-ta0043-mapping",
+              "topicSlugs": ["mitre-ta0043-technique-breakdown", "defensive-controls-against-recon"]
+            },
+            {
+              "id": "mod-23",
+              "number": 23,
+              "slug": "mod-23-threat-feeds-safe-ioc",
+              "title": "Module 23: Threat Feeds & Safe IOC Handling",
+              "summary": "Defanging malicious URLs/IPs, Traffic Light Protocol (TLP 2.0), STIX 2.1 / TAXII 2.1, MISP/OpenCTI, and responsible disclosure.",
+              "careerRelevance": ["CTI Analyst", "SOC Analyst L1", "CERT/CSIRT Handler"],
+              "prerequisites": ["mod-22"],
+              "labSlug": "lab-23-tlp-stix-and-defanging",
+              "topicSlugs": ["ioc-defanging-and-tlp-protocol", "stix-taxii-and-feed-curation"]
+            }
+          ]
+        },
+        {
+          "id": "phase-7",
+          "number": 7,
+          "slug": "phase-7-soc-incident-response",
+          "title": "Phase 7 — SOC & Incident Response",
+          "summary": "Alert triage enrichment, phishing & C2 infrastructure pivoting, and vulnerability exposure prioritization.",
+          "modules": [
+            {
+              "id": "mod-24",
+              "number": 24,
+              "slug": "mod-24-soc-fundamentals",
+              "title": "Module 24: SOC Fundamentals",
+              "summary": "SOC tier workflows, SIEM alert triage, log correlation basics, false-positive reduction, and external OSINT enrichment.",
+              "careerRelevance": ["SOC Analyst L1", "Managed Security Analyst (MSSP)", "Blue Team Junior"],
+              "prerequisites": ["mod-23"],
+              "labSlug": "lab-24-siem-alert-osint-enrichment",
+              "topicSlugs": ["soc-triage-and-siem-enrichment", "external-reputation-and-false-positives"]
+            },
+            {
+              "id": "mod-25",
+              "number": 25,
+              "slug": "mod-25-osint-incident-response",
+              "title": "Module 25: OSINT in Incident Response",
+              "summary": "Tracing phishing domains, TLS JARM/JA3 concepts, sandboxed URL scanners (urlscan.io), and pivoting across attacker ASN clusters.",
+              "careerRelevance": ["Incident Responder", "SOC Analyst L1/L2", "Phishing Defense Analyst"],
+              "prerequisites": ["mod-24"],
+              "labSlug": "lab-25-phishing-infrastructure-trace",
+              "topicSlugs": ["phishing-kit-and-urlscan-analysis", "attacker-c2-infrastructure-pivoting"]
+            },
+            {
+              "id": "mod-26",
+              "number": 26,
+              "slug": "mod-26-vulnerability-exposure",
+              "title": "Module 26: Vulnerability Context & Exposure Management",
+              "summary": "Combining NVD CVEs, CVSS, EPSS, and CISA Known Exploited Vulnerabilities (KEV) with passive asset exposure data.",
+              "careerRelevance": ["Vulnerability Management Analyst", "SOC Analyst", "Exposure Engineer"],
+              "prerequisites": ["mod-25"],
+              "labSlug": "lab-26-cve-kev-epss-prioritization",
+              "topicSlugs": ["cve-cvss-epss-and-cisa-kev", "passive-exposure-prioritization"]
+            }
+          ]
+        },
+        {
+          "id": "phase-8",
+          "number": 8,
+          "slug": "phase-8-advanced-investigation",
+          "title": "Phase 8 — Advanced Investigation",
+          "summary": "Corporate due diligence, ethical verification limits, dark web conceptual awareness, and professional analytic trade-craft.",
+          "modules": [
+            {
+              "id": "mod-27",
+              "number": 27,
+              "slug": "mod-27-corporate-business-osint",
+              "title": "Module 27: Corporate & Business OSINT",
+              "summary": "Corporate registries (SEC EDGAR, Companies House, OpenCorporates), LEI codes (GLEIF), sanctions screening, and supply-chain mapping.",
+              "careerRelevance": ["Corporate Due Diligence Analyst", "AML/KYC Investigator", "Vendor Risk Analyst"],
+              "prerequisites": ["mod-26"],
+              "labSlug": "lab-27-corporate-lei-filings-map",
+              "topicSlugs": ["corporate-filings-and-lei-codes", "beneficial-ownership-and-sanctions"]
+            },
+            {
+              "id": "mod-28",
+              "number": 28,
+              "slug": "mod-28-people-osint-advanced",
+              "title": "Module 28: People OSINT Advanced",
+              "summary": "Public-interest attribution standards, conflict-of-interest checks, anti-doxxing safeguards, and structured source corroboration.",
+              "careerRelevance": ["Investigative Journalist", "Fraud Investigator", "Insider Risk Legal Support"],
+              "prerequisites": ["mod-27"],
+              "labSlug": "lab-28-corroboration-and-attribution",
+              "topicSlugs": ["corroboration-and-anti-doxxing", "structured-research-interviews-ethics"]
+            },
+            {
+              "id": "mod-29",
+              "number": 29,
+              "slug": "mod-29-dark-web-awareness",
+              "title": "Module 29: Dark Web Awareness (Concepts Only)",
+              "summary": "Conceptual distinction between Clear, Deep, and Dark Web, onion routing architecture, ransomware leak site monitoring via clearnet CTI feeds, and strict legal boundaries (zero access instructions).",
+              "careerRelevance": ["Threat Intelligence Analyst", "Brand & Data Leak Monitor", "Cyber Risk Advisor"],
+              "prerequisites": ["mod-28"],
+              "labSlug": "lab-29-surface-deep-dark-classification",
+              "topicSlugs": ["surface-deep-and-dark-web-concepts", "clearnet-cti-monitoring-and-legal-limits"]
+            },
+            {
+              "id": "mod-30",
+              "number": 30,
+              "slug": "mod-30-professional-reporting",
+              "title": "Module 30: Professional Reporting & Analysis",
+              "summary": "Structured Analytic Techniques (Analysis of Competing Hypotheses), cognitive biases, Words of Estimative Probability, BLUF writing, and the Admiralty Code.",
+              "careerRelevance": ["Senior OSINT Analyst", "Threat Intelligence Lead", "SOC Lead", "Investigative Editor"],
+              "prerequisites": ["mod-29"],
+              "labSlug": "lab-30-admiralty-and-ach-report",
+              "topicSlugs": ["cognitive-biases-and-ach", "admiralty-code-and-bluf-reporting"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
